@@ -1,4 +1,4 @@
-package com.example.chickmed.ui.component
+package com.example.chickmed.ui.component.respond
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

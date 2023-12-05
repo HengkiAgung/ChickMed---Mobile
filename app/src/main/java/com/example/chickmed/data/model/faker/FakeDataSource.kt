@@ -1,4 +1,8 @@
-package com.example.chickmed.data.model
+package com.example.chickmed.data.model.faker
+
+import com.example.chickmed.data.model.ArticleModel
+import com.example.chickmed.data.model.DiseaseModel
+import com.example.chickmed.data.model.ReportModel
 
 object FakeDataSource {
     val dummyArticle = listOf(
@@ -92,6 +96,39 @@ object FakeDataSource {
             "Darah adalah cairan yang terdapat pada semua makhluk hidup (kecuali tumbuhan) tingkat tinggi yang berfungsi mengirimkan zat-zat dan oksigen yang dibutuhkan oleh jaringan tubuh, mengangkut bahan-bahan kimia hasil metabolisme dan juga sebagai pertahanan tubuh terhadap virus atau bakteri.",
             "https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2021/06/04035748/Darah.jpg",
             "11 Sep 2023",
+        ),
+    )
+
+    val dummyReport = listOf(
+        ReportModel(
+            1,
+            "29 Okt 2023",
+            "https://arboge.com/wp-content/uploads/2014/11/Kotoran-Ayam-Mencret-Coklat.jpg",
+            listOf(
+                DiseaseModel(
+                    1,
+                    "Coccidiosis Salmonella Newcastle",
+                    "Coccidiosis is a gastrointestinal illness caused by a protozoan. Clinical signs include diarrhea (with or without mucus), hematochezia, lethargy, weight loss, vomiting, signs of abdominal pain, pallor, and anorexia.",
+                    "Pengobatan koksidiosis dapat dilakukan dengan pemberian obat-obatan yang bersifat koksidiostat atau koksidiosidal. Pemberian koksidiostat tidak mengeliminasi seluruh parasit dari dalam tubuh tetapi hanya menekan jumlah parasit yang ada di dalam tubuh."
+                ),
+                DiseaseModel(
+                    1,
+                    "Salmonella",
+                    "Salmonella is a genus of rod-shaped gram-negative bacteria of the family Enterobacteriaceae. The two known species of Salmonella are Salmonella enterica and Salmonella bongori. S. enterica is the type species and is further divided into six subspecies that include over 2,600 serotypes.",
+                    "Cara paling mudah untuk mengatasi infeksi Salmonella adalah minum banyak cairan untuk mencegah dehidrasi. Adapun jenis cairan yang bisa membantu tubuh tetap terhidrasi meliputi: Air mineral. Minuman olahraga atau isotonik."
+                ),
+                DiseaseModel(
+                    1,
+                    "Newcastle",
+                    "Newcastle Disease atau yang sering disebut ND merupakan salah satu penyakit yang sangat ditakuti di industri broiler. Penyebabnya adalah avian paramyxovirus serotipe 1 (AMPV-1). ND menyerang burung liar dan unggas domestik yang biasanya muncul sebagai penyakit pernapasan.",
+                    "Pencegahan Penyakit Pada Ayam Broiler\n" +
+                            "Rutin memberikan multivitamin untuk memperkuat sistem imun.\n" +
+                            "Penerapan biosecurity di sekitar area ternak.\n" +
+                            "Memberikan probiotik untuk menekan bakteri patogen.\n" +
+                            "Memberikan pakan dengan nutrisi yang tinggi.\n" +
+                            "Menerapkan manajemen pengolahan kandang yang baik."
+                ),
+            ),
         ),
     )
 }

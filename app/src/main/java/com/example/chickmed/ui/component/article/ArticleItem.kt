@@ -1,4 +1,4 @@
-package com.example.chickmed.ui.component
+package com.example.chickmed.ui.component.article
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -77,8 +77,7 @@ fun ArticleItem(
             ) {
                 Text(
                     text = title,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontSize = 15.sp,
                     color = MaterialTheme.colorScheme.onTertiaryContainer,
                     modifier = modifier.testTag("ArticleTitle")
                 )

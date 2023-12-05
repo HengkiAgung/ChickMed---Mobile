@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -34,7 +35,7 @@ fun BottomBar(navController: NavHostController, modifier: Modifier = Modifier) {
             ),
             NavigationItem(
                 title = stringResource(R.string.reports_nav),
-                icon = ImageVector.vectorResource(id = R.drawable.baseline_bookmark_fill),
+                icon = ImageVector.vectorResource(id = R.drawable.baseline_list),
                 screen = Screen.Reports
             ),
             NavigationItem(

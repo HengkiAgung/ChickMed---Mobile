@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -13,7 +14,12 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.core.view.WindowCompat
+import com.example.chickmed.R
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -62,9 +68,42 @@ fun ChickMedTheme(
         }
     }
 
+    val myCustomFont = FontFamily(
+        Font(R.font.poppins_regular),
+        Font(R.font.poppins_italic, style = FontStyle.Italic),
+        Font(R.font.poppins_medium, FontWeight.Medium),
+        Font(R.font.poppins_mediumitalic, FontWeight.Medium, style = FontStyle.Italic),
+        Font(R.font.poppins_bold, FontWeight.Bold),
+        Font(R.font.poppins_bolditalic, FontWeight.Bold, style = FontStyle.Italic)
+    )
+
+
+    val defaultTypography = Typography()
+    val typography = Typography(
+        displayLarge = defaultTypography.displayLarge.copy(fontFamily = myCustomFont),
+        displayMedium = defaultTypography.displayMedium.copy(fontFamily = myCustomFont),
+        displaySmall = defaultTypography.displaySmall.copy(fontFamily = myCustomFont),
+
+        headlineLarge = defaultTypography.headlineLarge.copy(fontFamily = myCustomFont),
+        headlineMedium = defaultTypography.headlineMedium.copy(fontFamily = myCustomFont),
+        headlineSmall = defaultTypography.headlineSmall.copy(fontFamily = myCustomFont),
+
+        titleLarge = defaultTypography.titleLarge.copy(fontFamily = myCustomFont),
+        titleMedium = defaultTypography.titleMedium.copy(fontFamily = myCustomFont),
+        titleSmall = defaultTypography.titleSmall.copy(fontFamily = myCustomFont),
+
+        bodyLarge = defaultTypography.bodyLarge.copy(fontFamily = myCustomFont),
+        bodyMedium = defaultTypography.bodyMedium.copy(fontFamily = myCustomFont),
+        bodySmall = defaultTypography.bodySmall.copy(fontFamily = myCustomFont),
+
+        labelLarge = defaultTypography.labelLarge.copy(fontFamily = myCustomFont),
+        labelMedium = defaultTypography.labelMedium.copy(fontFamily = myCustomFont),
+        labelSmall = defaultTypography.labelSmall.copy(fontFamily = myCustomFont)
+    )
+
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = typography,
         content = content
     )
 }

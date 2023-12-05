@@ -1,4 +1,4 @@
-package com.example.chickmed.data.local.room
+package com.example.chickmed.data.local.room.bookmark
 
 import android.content.Context
 import androidx.room.Database

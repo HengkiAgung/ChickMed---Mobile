@@ -2,6 +2,6 @@
     <string name="app_name">ChickMed</string>
     <string name="home_nav">Home</string>
     <string name="reports_nav">Reports</string>
-    <string name="schedule_nav" />
-    <string name="profile_nav" />
+    <string name="schedule_nav">Schedule</string>
+    <string name="profile_nav">Profile</string>
 </resources>

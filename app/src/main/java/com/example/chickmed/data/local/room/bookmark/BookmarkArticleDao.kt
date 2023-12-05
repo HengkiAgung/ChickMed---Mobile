@@ -1,6 +1,5 @@
-package com.example.chickmed.data.local.room
+package com.example.chickmed.data.local.room.bookmark
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy

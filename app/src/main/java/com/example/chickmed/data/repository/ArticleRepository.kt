@@ -1,12 +1,12 @@
 package com.example.chickmed.data.repository
 
-import com.example.chickmed.data.local.room.BookmarkArticleDao
+import com.example.chickmed.data.local.room.bookmark.BookmarkArticleDao
 import com.example.chickmed.data.model.ArticleModel
-import com.example.chickmed.data.model.FakeDataSource
+import com.example.chickmed.data.model.faker.FakeDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-class ArticleRepository private constructor(
+class ArticleRepository (
     private val bookmarkArticleDao: BookmarkArticleDao
 ) {
     private val dataArticles = mutableListOf<ArticleModel>()
@@ -20,7 +20,7 @@ class ArticleRepository private constructor(
         }
     }
 
-    fun getAllArticleModel(query: String): Flow<List<ArticleModel>> {
+    fun getArticles(query: String): Flow<List<ArticleModel>> {
         articles.clear()
 
         articles.addAll(dataArticles.filter {
@@ -30,7 +30,7 @@ class ArticleRepository private constructor(
         return flowOf(articles)
     }
 
-    fun getArticleModelById(id: Int): Flow<ArticleModel> {
+    fun getArticleById(id: Int): Flow<ArticleModel> {
         return flowOf(articles.first {
             it.id == id
         })
