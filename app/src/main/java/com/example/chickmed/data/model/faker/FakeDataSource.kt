@@ -3,6 +3,7 @@ package com.example.chickmed.data.model.faker
 import com.example.chickmed.data.model.ArticleModel
 import com.example.chickmed.data.model.DiseaseModel
 import com.example.chickmed.data.model.ReportModel
+import com.example.chickmed.data.model.UserModel
 
 object FakeDataSource {
     val dummyArticle = listOf(
@@ -130,5 +131,13 @@ object FakeDataSource {
                 ),
             ),
         ),
+    )
+
+    val dummyUser = UserModel(
+        1,
+        "Risky",
+        "Risky@mail.com",
+        "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg",
+        "sdawflkjslkdfjsda",
     )
 }

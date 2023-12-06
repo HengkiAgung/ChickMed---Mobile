@@ -2,14 +2,15 @@ package com.example.chickmed.data.repository
 
 import com.example.chickmed.data.model.UserModel
 import com.example.chickmed.data.local.preference.UserPreference
+import kotlinx.coroutines.flow.Flow
 
 class UserRepository (
     private val userPreference: UserPreference
 ) {
-    fun getUser() = userPreference.getUser()
+    fun getUser(): Flow<UserModel> = userPreference.getUser()
 
-    suspend fun saveUser(id: String, name: String, token: String) {
-        val user = UserModel(id, name, token)
+    suspend fun saveUser(id: Int, email: String, name: String, profile: String, token: String) {
+        val user = UserModel(id, name, email, profile, token)
         userPreference.saveUser(user)
     }
 

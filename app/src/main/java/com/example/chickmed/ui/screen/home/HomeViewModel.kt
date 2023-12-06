@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chickmed.data.model.ArticleModel
 import com.example.chickmed.data.model.UserModel
+import com.example.chickmed.data.model.faker.FakeDataSource
 import com.example.chickmed.data.repository.ArticleRepository
 import com.example.chickmed.data.repository.UserRepository
 import com.example.chickmed.ui.state.UiState
@@ -26,6 +27,8 @@ class HomeViewModel(
 
     fun getArticles() {
         viewModelScope.launch {
+            userRepository.getUser()
+//            userRepository.saveUser(FakeDataSource.dummyUser.id, FakeDataSource.dummyUser.name, FakeDataSource.dummyUser.profile, FakeDataSource.dummyUser.token)
             articleRepository.getArticles("")
                 .catch {
                     _articles.value = UiState.Error(it.message.toString())

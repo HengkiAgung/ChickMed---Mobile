@@ -23,4 +23,7 @@ interface ScheduleDao {
 
     @Query("UPDATE schedule SET title = :title, time = :time, day = :day, isActive = :isActive WHERE id = :id")
     suspend fun updateSchedule(id: Int, title: String, time: String, day: String, isActive: Boolean)
+
+    @Query("UPDATE schedule SET isActive = :isActive WHERE id = :id")
+    suspend fun updateActiveSchedule(id: Int, isActive: Boolean)
 }

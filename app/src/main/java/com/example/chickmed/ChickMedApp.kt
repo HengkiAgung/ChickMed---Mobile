@@ -14,8 +14,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.chickmed.ui.component.BottomBar
 import com.example.chickmed.ui.navigation.Screen
+import com.example.chickmed.ui.screen.account.profile.ProfileScreen
 import com.example.chickmed.ui.screen.analysis.report.ReportsScreen
 import com.example.chickmed.ui.screen.home.HomeScreen
+import com.example.chickmed.ui.screen.schedule.ScheduleScreen
 
 @Composable
 fun ChickMedApp(
@@ -47,18 +49,18 @@ fun ChickMedApp(
                     onArticleClick = {},
                 )
             }
-            composable(
-                Screen.DetailArticle.route,
-                arguments = listOf(navArgument("id") { type = NavType.IntType })
-            ) {
-//                val id = it.arguments?.getInt("id")
-//
-//                DetailAr(id = id ?: 0)
-            }
             composable(Screen.Reports.route) {
                 ReportsScreen(
                     onReportClick = {}
                 )
+            }
+            composable(Screen.Schedule.route) {
+                ScheduleScreen(
+                    onScheduleClick = {}
+                )
+            }
+            composable(Screen.Profile.route) {
+                ProfileScreen()
             }
         }
     }

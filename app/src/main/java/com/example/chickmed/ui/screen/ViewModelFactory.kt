@@ -8,7 +8,10 @@ import com.example.chickmed.data.repository.ArticleRepository
 import com.example.chickmed.data.repository.ReportRepository
 import com.example.chickmed.data.repository.ScheduleRepository
 import com.example.chickmed.data.repository.UserRepository
+import com.example.chickmed.ui.screen.account.profile.ProfileViewModel
 import com.example.chickmed.ui.screen.analysis.report.ReportViewModel
+import com.example.chickmed.ui.screen.article.article.ArticleViewModel
+import com.example.chickmed.ui.screen.article.detail_article.DetailArticleViewModel
 import com.example.chickmed.ui.screen.home.HomeViewModel
 import com.example.chickmed.ui.screen.schedule.ScheduleViewModel
 
@@ -29,7 +32,9 @@ class ViewModelFactory(
         },
         ReportViewModel::class.java to { ReportViewModel(reportRepository) },
         ScheduleViewModel::class.java to { ScheduleViewModel(scheduleRepository) },
-        // Add more ViewModel classes and their constructors as needed
+        ArticleViewModel::class.java to { ArticleViewModel(articleRepository) },
+        DetailArticleViewModel::class.java to { DetailArticleViewModel(articleRepository) },
+        ProfileViewModel::class.java to { ProfileViewModel(userRepository) },
     )
 
     @Suppress("UNCHECKED_CAST")

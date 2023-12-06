@@ -26,6 +26,7 @@ class ScheduleViewModel (
                 .collect { scheduleList ->
                     _schedule.value = UiState.Success(scheduleList)
                 }
+
         }
     }
 
@@ -38,6 +39,18 @@ class ScheduleViewModel (
     fun deleteSchedule(id: Int) {
         viewModelScope.launch {
             scheduleRepository.deleteSchedule(id)
+        }
+    }
+
+    fun updateActiveSchedule(id: Int, isActive: Boolean) {
+        viewModelScope.launch {
+            scheduleRepository.updateActiveSchedule(id, isActive)
+        }
+    }
+
+    fun updateSchedule(id: Int, title: String, time: String, day: String, isActive: Boolean) {
+        viewModelScope.launch {
+            scheduleRepository.updateSchedule(id, title, time, day, isActive)
         }
     }
 }

@@ -17,6 +17,8 @@ class ScheduleRepository (
 
     suspend fun deleteSchedule(id: Int) = ScheduleDao.deleteSchedule(id)
 
+    suspend fun updateActiveSchedule(id: Int, isActive: Boolean) = ScheduleDao.updateActiveSchedule(id, isActive)
+
     suspend fun updateSchedule(id: Int, title: String, time: String, day: String, isActive: Boolean) = ScheduleDao.updateSchedule(id, title, time, day, isActive)
 
     companion object {

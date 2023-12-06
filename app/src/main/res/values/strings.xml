@@ -4,4 +4,6 @@
     <string name="reports_nav">Reports</string>
     <string name="schedule_nav">Schedule</string>
     <string name="profile_nav">Profile</string>
+    <string name="title_activity_article">ArticleActivity</string>
+    <string name="title_activity_detail_article">Detail Article</string>
 </resources>
