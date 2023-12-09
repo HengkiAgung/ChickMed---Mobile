@@ -9,6 +9,7 @@ import com.example.chickmed.data.repository.ReportRepository
 import com.example.chickmed.data.repository.ScheduleRepository
 import com.example.chickmed.data.repository.UserRepository
 import com.example.chickmed.ui.screen.account.profile.ProfileViewModel
+import com.example.chickmed.ui.screen.analysis.detail_analysis.DetailAnalysisViewModel
 import com.example.chickmed.ui.screen.analysis.report.ReportViewModel
 import com.example.chickmed.ui.screen.article.article.ArticleViewModel
 import com.example.chickmed.ui.screen.article.detail_article.DetailArticleViewModel
@@ -35,6 +36,7 @@ class ViewModelFactory(
         ArticleViewModel::class.java to { ArticleViewModel(articleRepository) },
         DetailArticleViewModel::class.java to { DetailArticleViewModel(articleRepository) },
         ProfileViewModel::class.java to { ProfileViewModel(userRepository) },
+        DetailAnalysisViewModel::class.java to { DetailAnalysisViewModel(reportRepository) },
     )
 
     @Suppress("UNCHECKED_CAST")

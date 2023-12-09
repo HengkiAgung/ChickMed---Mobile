@@ -1,11 +1,13 @@
 package com.example.chickmed.ui.screen.schedule
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -73,7 +75,9 @@ fun ScheduleScreen(
                         Icon(Icons.Filled.Add, "Large floating action button")
                     }
 
-                    LazyColumn {
+                    LazyColumn (
+                        modifier = Modifier.fillMaxHeight()
+                    ) {
                         if (schedule.data.isEmpty()) {
                             item {
                                 ErrorMessage(message = "No Schedule added")
@@ -95,6 +99,7 @@ fun ScheduleScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = modifier
                                         .fillMaxWidth()
+                                        .background(Color.White)
                                         .padding(20.dp)
                                 ) {
                                     Column {

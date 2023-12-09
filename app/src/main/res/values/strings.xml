@@ -6,4 +6,6 @@
     <string name="profile_nav">Profile</string>
     <string name="title_activity_article">ArticleActivity</string>
     <string name="title_activity_detail_article">Detail Article</string>
+    <string name="title_activity_camera">CameraActivity</string>
+    <string name="title_activity_detail_analysis">DetailAnalysisActivity</string>
 </resources>

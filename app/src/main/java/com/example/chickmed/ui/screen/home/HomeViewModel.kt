@@ -25,16 +25,24 @@ class HomeViewModel(
     val user: StateFlow<UiState<UserModel>>
         get() = _user
 
-    fun getArticles() {
+    fun getArticles(page: Int) {
         viewModelScope.launch {
-            userRepository.getUser()
+//            userRepository.getUser()
 //            userRepository.saveUser(FakeDataSource.dummyUser.id, FakeDataSource.dummyUser.name, FakeDataSource.dummyUser.profile, FakeDataSource.dummyUser.token)
-            articleRepository.getArticles("")
+            articleRepository.getArticles(page = page)
                 .catch {
                     _articles.value = UiState.Error(it.message.toString())
                 }
                 .collect { articles ->
-                    _articles.value = UiState.Success(articles.take(3))
+                    try {
+                        if (!articles.success) {
+                            _articles.value = UiState.Error(articles.message)
+                            return@collect
+                        }
+                        _articles.value = UiState.Success(articles.data.take(3))
+                    } catch (e: Exception) {
+                        _articles.value = UiState.Error(e.message.toString())
+                    }
                 }
         }
     }

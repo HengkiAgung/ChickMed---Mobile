@@ -18,14 +18,18 @@ class ArticleViewModel (
     val articles: StateFlow<UiState<List<ArticleModel>>>
         get() = _articles
 
-    fun getArticles() {
+    fun getArticles(page: Int) {
         viewModelScope.launch {
-            articleRepository.getArticles("")
+            articleRepository.getArticles(page = page)
                 .catch {
                     _articles.value = UiState.Error(it.message.toString())
                 }
                 .collect { articles ->
-                    _articles.value = UiState.Success(articles)
+                    if (!articles.success) {
+                        _articles.value = UiState.Error(articles.message)
+                        return@collect
+                    }
+                    _articles.value = UiState.Success(articles.data)
                 }
         }
     }

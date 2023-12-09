@@ -1,8 +1,8 @@
 package com.example.submission1.data.remote.retrofit
 
-import com.example.chickmed.data.remote.response.ArticleResponse
-import com.example.chickmed.data.remote.response.AuthResponse
+import com.example.chickmed.data.model.ArticleModel
 import com.example.chickmed.data.remote.response.MessageResponse
+import com.example.chickmed.data.remote.response.TemplateResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -30,33 +30,27 @@ interface ApiService {
     suspend fun login(
         @Field("email") email: String,
         @Field("password") password: String
-    ): Response<AuthResponse.LoginResponse>
+    ): Response<Any>
 
-    @GET("stories")
-    suspend fun getStories(
-        @Header("Authorization") token: String,
-        @Query("page") page: Int,
-        @Query("size") size: Int
-    ): Response<ArticleResponse.StoryResponse>
 
-    @GET("stories?location=1")
-    suspend fun getStoryWithLocations(
-        @Header("Authorization") token: String,
-    ): Response<ArticleResponse.StoryResponse>
+    @GET("articles")
+    suspend fun getArticles(
+        @Query("page") page: Int
+    ): Response<TemplateResponse<List<ArticleModel>>>
 
-    @GET("stories/{id}")
-    suspend fun getDetailStory(
-        @Header("Authorization") token: String,
-        @Path("id") id: String
-    ): Response<ArticleResponse.StoryItem>
-
-    @Multipart
-    @POST("stories")
-    suspend fun addStory(
-        @Header("Authorization") token: String,
-        @Part photo: MultipartBody.Part,
-        @Part("description") description: RequestBody,
-        @Part("lat") lat: Float?,
-        @Part("lon") lon: Float?
-    ): Response<MessageResponse>
+//    @GET("stories/{id}")
+//    suspend fun getDetailArticle(
+//        @Header("Authorization") token: String,
+//        @Path("id") id: String
+//    ): Response<ArticleResponse.ArticleItem>
+//
+//    @Multipart
+//    @POST("stories")
+//    suspend fun addArticle(
+//        @Header("Authorization") token: String,
+//        @Part photo: MultipartBody.Part,
+//        @Part("description") description: RequestBody,
+//        @Part("lat") lat: Float?,
+//        @Part("lon") lon: Float?
+//    ): Response<MessageResponse>
 }

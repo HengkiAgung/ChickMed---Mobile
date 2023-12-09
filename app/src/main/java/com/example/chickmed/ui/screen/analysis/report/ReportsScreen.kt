@@ -1,5 +1,7 @@
 package com.example.chickmed.ui.screen.analysis.report
 
+import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,6 +39,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.chickmed.R
+import com.example.chickmed.activity.DetailAnalysisActivity
+import com.example.chickmed.activity.DetailArticleActivity
 import com.example.chickmed.ui.component.article.ArticleItem
 import com.example.chickmed.ui.component.respond.ErrorMessage
 import com.example.chickmed.ui.component.respond.LoadingIndicator
@@ -46,12 +50,14 @@ import com.example.chickmed.ui.theme.ChickMedTheme
 
 @Composable
 fun ReportsScreen(
-    onReportClick: (id: Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ReportViewModel = viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
     ),
 ) {
+    val activity = LocalContext.current as Activity
+    val context = LocalContext.current
+
     Column(
         modifier = modifier
             .padding(start = 20.dp, top = 20.dp, end = 20.dp)
@@ -96,7 +102,7 @@ fun ReportsScreen(
                     LazyColumn {
                         if (reports.data.isEmpty()) {
                             item {
-                                ErrorMessage(message = "No article found")
+                                ErrorMessage(message = "No Report found")
                             }
                         }
                         items(reports.data, key = { it.id }) {
@@ -114,8 +120,11 @@ fun ReportsScreen(
                                         start = 10.dp,
                                         end = 10.dp,
                                     )
+                                    .background(Color.White)
                                     .clickable {
-                                        onReportClick(it.id)
+                                        activity.startActivity(
+                                            Intent(context, DetailAnalysisActivity::class.java).putExtra("id_report", it.id)
+                                        )
                                     }
                             ) {
                                 Row(
@@ -181,6 +190,7 @@ fun SummaryContent(
             ),
 
             modifier = modifier
+                .background(Color.White)
                 .fillMaxWidth()
                 .padding(
                     top = 10.dp,
@@ -242,6 +252,7 @@ fun SummaryContent(
                         start = 10.dp,
                         end = 10.dp,
                     )
+                    .background(Color.White)
                     .weight(1f)
             ) {
                 Column {
@@ -286,6 +297,7 @@ fun SummaryContent(
                         start = 10.dp,
                         end = 10.dp,
                     )
+                    .background(Color.White)
                     .weight(1f)
             ) {
                 Column {

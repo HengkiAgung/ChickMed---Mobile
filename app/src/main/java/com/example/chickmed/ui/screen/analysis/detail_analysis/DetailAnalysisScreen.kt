@@ -1,4 +1,123 @@
 package com.example.chickmed.ui.screen.analysis.detail_analysis
 
-class DetailAnalysisScreen {
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.example.chickmed.ui.component.respond.ErrorMessage
+import com.example.chickmed.ui.component.respond.LoadingIndicator
+import com.example.chickmed.ui.screen.ViewModelFactory
+import com.example.chickmed.ui.state.UiState
+
+@Composable
+fun DetailAnalysisScreen(
+    id: Int,
+    modifier: Modifier = Modifier,
+    viewModel: DetailAnalysisViewModel = viewModel(
+        factory = ViewModelFactory.getInstance(LocalContext.current)
+    ),
+) {
+    viewModel.report.collectAsState(initial = UiState.Loading).value.let { report ->
+        when (report) {
+            is UiState.Loading -> {
+                LoadingIndicator()
+                viewModel.getReportById(id)
+            }
+
+            is UiState.Success -> {
+                LazyColumn(
+                    modifier = modifier
+                        .padding(20.dp)
+                ) {
+                    item {
+                        Row (
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                        ){
+                            AsyncImage(
+                                model = report.data.resultImage,
+                                contentDescription = "Report ${report.data.date} Image",
+                                alignment = Alignment.Center,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .size(100.dp)
+                                    .clip(MaterialTheme.shapes.medium)
+                            )
+                            Spacer(modifier = Modifier.width(20.dp))
+                            Column {
+                                Text(
+                                    text = "Wednesday",
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                Text(
+                                    text = report.data.date,
+                                    color = Color.Gray,
+                                )
+                                Text(
+                                    text = "80%",
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                                Text(
+                                    text = "Disease Detection",
+                                    color = Color.Gray,
+                                )
+                                Spacer(modifier = Modifier.height(30.dp))
+                            }
+                        }
+                    }
+
+                    items(report.data.diseases) { report ->
+                        Column {
+                            Text(
+                                text = report.name,
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            Text(
+                                text = report.description,
+                                color = Color.Gray,
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Text(
+                                text = "Solution",
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            Text(
+                                text = report.solution,
+                                color = Color.Gray,
+                            )
+                            Spacer(modifier = Modifier.height(30.dp))
+                            Divider(thickness = 1.dp)
+                            Spacer(modifier = Modifier.height(30.dp))
+                        }
+                    }
+
+                }
+            }
+
+            is UiState.Error -> {
+                ErrorMessage(message = report.errorMessage, modifier = modifier)
+            }
+        }
+    }
 }

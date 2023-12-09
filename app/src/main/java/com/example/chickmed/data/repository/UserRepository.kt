@@ -2,10 +2,12 @@ package com.example.chickmed.data.repository
 
 import com.example.chickmed.data.model.UserModel
 import com.example.chickmed.data.local.preference.UserPreference
+import com.example.submission1.data.remote.retrofit.ApiService
 import kotlinx.coroutines.flow.Flow
 
 class UserRepository (
-    private val userPreference: UserPreference
+    private val userPreference: UserPreference,
+    private val apiService: ApiService
 ) {
     fun getUser(): Flow<UserModel> = userPreference.getUser()
 
@@ -20,10 +22,11 @@ class UserRepository (
         @Volatile
         private var instance: UserRepository? = null
         fun getInstance(
-            userPreference: UserPreference
+            userPreference: UserPreference,
+            apiService: ApiService
         ): UserRepository =
             instance ?: synchronized(this) {
-                instance ?: UserRepository(userPreference)
+                instance ?: UserRepository(userPreference, apiService)
             }.also {
                 instance = it }
     }

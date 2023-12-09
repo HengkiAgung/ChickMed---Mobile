@@ -1,6 +1,7 @@
 package com.example.chickmed.data.repository
 
 import androidx.compose.runtime.mutableStateOf
+import com.example.chickmed.data.model.ArticleModel
 import com.example.chickmed.data.model.ReportModel
 import com.example.chickmed.data.model.SummaryModel
 import com.example.chickmed.data.model.faker.FakeDataSource
@@ -35,10 +36,10 @@ class ReportRepository {
         return flowOf(summary.value)
     }
 
-    fun getReportById(id: Int): ReportModel {
-        return reports.first {
+    fun getReportById(id: Int): Flow<ReportModel> {
+        return flowOf(reports.first {
             it.id == id
-        }
+        })
     }
 
     companion object {

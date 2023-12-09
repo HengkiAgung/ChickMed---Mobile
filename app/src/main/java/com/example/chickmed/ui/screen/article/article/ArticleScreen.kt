@@ -32,11 +32,12 @@ fun ArticleScreen(
     val activity = LocalContext.current as Activity
     val context = LocalContext.current
 
+
     viewModel.articles.collectAsState(initial = UiState.Loading).value.let { articles ->
         when (articles) {
             is UiState.Loading -> {
                 LoadingIndicator(modifier = modifier)
-                viewModel.getArticles()
+                viewModel.getArticles(1)
             }
 
             is UiState.Success -> {

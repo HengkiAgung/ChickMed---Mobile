@@ -14,6 +14,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.chickmed.ui.component.BottomBar
 import com.example.chickmed.ui.navigation.Screen
+import com.example.chickmed.ui.screen.Auth.LoginScreen
+import com.example.chickmed.ui.screen.Auth.RegisterScreen
+import com.example.chickmed.ui.screen.Auth.WelcomeScreen
 import com.example.chickmed.ui.screen.account.profile.ProfileScreen
 import com.example.chickmed.ui.screen.analysis.report.ReportsScreen
 import com.example.chickmed.ui.screen.home.HomeScreen
@@ -30,7 +33,7 @@ fun ChickMedApp(
     Scaffold(
         bottomBar =
         {
-            if (currentRoute != Screen.DetailArticle.route) {
+            if (currentRoute != Screen.Login.route && currentRoute != Screen.Welcome.route && currentRoute != Screen.Register.route) {
                 BottomBar(navController)
             }
         },
@@ -46,13 +49,10 @@ fun ChickMedApp(
                 HomeScreen(
                     image = "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg",
                     name = "Hengki Agung Prayoga",
-                    onArticleClick = {},
                 )
             }
             composable(Screen.Reports.route) {
-                ReportsScreen(
-                    onReportClick = {}
-                )
+                ReportsScreen()
             }
             composable(Screen.Schedule.route) {
                 ScheduleScreen(
@@ -61,6 +61,15 @@ fun ChickMedApp(
             }
             composable(Screen.Profile.route) {
                 ProfileScreen()
+            }
+            composable(Screen.Welcome.route) {
+                WelcomeScreen(navController = navController)
+            }
+            composable(Screen.Login.route) {
+                LoginScreen(navController = navController)
+            }
+            composable(Screen.Register.route) {
+                RegisterScreen(navController = navController)
             }
         }
     }

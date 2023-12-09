@@ -12,11 +12,15 @@ sealed class Screen(val route: String) {
 
 
     // Article
-    data object Bookmark : Screen("cart")
     data object DetailArticle : Screen("detail/{id}") {
         fun createRoute(id: Int) = "detail/$id"
     }
 
     // Account
     data object Profile : Screen("profile")
+
+    // Auth
+    data object Login : Screen("login")
+    data object Register : Screen("register")
+    data object Welcome : Screen("welcome")
 }

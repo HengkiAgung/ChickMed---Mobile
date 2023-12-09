@@ -3,11 +3,16 @@ package com.example.chickmed.data.repository
 import com.example.chickmed.data.local.room.bookmark.BookmarkArticleDao
 import com.example.chickmed.data.model.ArticleModel
 import com.example.chickmed.data.model.faker.FakeDataSource
+import com.example.chickmed.data.remote.response.TemplateResponse
+import com.example.submission1.data.remote.retrofit.ApiService
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 
 class ArticleRepository (
-    private val bookmarkArticleDao: BookmarkArticleDao
+    private val bookmarkArticleDao: BookmarkArticleDao,
+    private val apiService: ApiService
 ) {
     private val dataArticles = mutableListOf<ArticleModel>()
     private val articles = mutableListOf<ArticleModel>()
@@ -20,15 +25,14 @@ class ArticleRepository (
         }
     }
 
-    fun getArticles(query: String): Flow<List<ArticleModel>> {
-        articles.clear()
+    fun getArticles(page: Int): Flow<TemplateResponse<List<ArticleModel>>> =
+        flow {
+            val articlesFromApi = apiService.getArticles(page = page)
+            articlesFromApi.body()?.let { emit(it) }
+        }.catch { e ->
+            emit(TemplateResponse(success = false, message = e.message.toString(), data = emptyList()))
+        }
 
-        articles.addAll(dataArticles.filter {
-            it.title.contains(query, true)
-        })
-
-        return flowOf(articles)
-    }
 
     fun getArticleById(id: Int): Flow<ArticleModel> {
         return flowOf(articles.first {
@@ -54,10 +58,11 @@ class ArticleRepository (
         @Volatile
         private var instance: ArticleRepository? = null
         fun getInstance(
+            apiService: ApiService,
             bookmarkArticleDao: BookmarkArticleDao
         ): ArticleRepository =
             instance ?: synchronized(this) {
-                instance ?: ArticleRepository(bookmarkArticleDao)
+                instance ?: ArticleRepository(bookmarkArticleDao, apiService)
             }.also { instance = it }
     }
 }
