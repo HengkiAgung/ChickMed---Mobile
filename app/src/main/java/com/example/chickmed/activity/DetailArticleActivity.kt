@@ -57,7 +57,9 @@ class DetailArticleActivity : ComponentActivity() {
                         },
                     )
                     { innerPadding ->
-                        DetailArticleScreen(id = idArticle, modifier = Modifier.padding(innerPadding))
+                        DetailArticleScreen(id = idArticle, modifier = Modifier.padding(innerPadding), redirectToWelcome = {
+                            activity?.finish()
+                        })
                     }
                 }
             }

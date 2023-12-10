@@ -15,13 +15,14 @@ object Injection {
         val apiService = ApiConfig.getApiService()
         val favoriteDatabase = BookmarkArticleDatabase.getInstance(context)
         val favoriteDao = favoriteDatabase.bookmarkArticleDao()
-        return ArticleRepository.getInstance(bookmarkArticleDao = favoriteDao, apiService = apiService)
+        val userPreference = UserPreference.getInstance(context.dataStore)
+        return ArticleRepository.getInstance(bookmarkArticleDao = favoriteDao, apiService = apiService, userPreference = userPreference)
     }
 
     fun provideUserRepository(context: Context): UserRepository {
         val apiService = ApiConfig.getApiService()
         val userPreference = UserPreference.getInstance(context.dataStore)
-        return UserRepository.getInstance(userPreference, apiService = apiService)
+        return UserRepository.getInstance(userPreference = userPreference, apiService = apiService)
     }
 
     fun provideScheduleRepository(context: Context): ScheduleRepository {

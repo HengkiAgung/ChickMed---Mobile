@@ -24,6 +24,7 @@ import com.example.chickmed.ui.state.UiState
 
 @Composable
 fun ArticleScreen(
+    redirectToWelcome: () -> Unit,
     viewModel: ArticleViewModel = viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
     ),
@@ -51,6 +52,10 @@ fun ArticleScreen(
 
             is UiState.Error -> {
                 ErrorMessage(message = articles.errorMessage, modifier = modifier)
+            }
+
+            is UiState.Unauthorized -> {
+                redirectToWelcome()
             }
         }
     }

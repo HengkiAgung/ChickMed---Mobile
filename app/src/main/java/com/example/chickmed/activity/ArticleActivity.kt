@@ -55,7 +55,9 @@ class ArticleActivity : ComponentActivity() {
                         },
                     )
                     { innerPadding ->
-                        ArticleScreen(modifier = Modifier.padding(innerPadding))
+                        ArticleScreen(modifier = Modifier.padding(innerPadding), redirectToWelcome = {
+                            activity?.finish()
+                        })
                     }
                 }
             }

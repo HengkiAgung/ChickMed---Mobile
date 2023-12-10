@@ -1,5 +1,6 @@
 package com.example.chickmed.data.repository
 
+import com.example.chickmed.data.local.preference.UserPreference
 import com.example.chickmed.data.local.room.bookmark.BookmarkArticleDao
 import com.example.chickmed.data.model.ArticleModel
 import com.example.chickmed.data.model.faker.FakeDataSource
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.flowOf
 
 class ArticleRepository (
     private val bookmarkArticleDao: BookmarkArticleDao,
+    private val userPreference: UserPreference,
     private val apiService: ApiService
 ) {
     private val dataArticles = mutableListOf<ArticleModel>()
@@ -28,7 +30,19 @@ class ArticleRepository (
     fun getArticles(page: Int): Flow<TemplateResponse<List<ArticleModel>>> =
         flow {
             val articlesFromApi = apiService.getArticles(page = page)
-            articlesFromApi.body()?.let { emit(it) }
+            if (articlesFromApi.code() == 401) {
+                userPreference.destroyUser()
+                emit(TemplateResponse(success = false, message = "Unauthorized", data = emptyList()))
+                return@flow
+            }
+
+            articlesFromApi.body()?.apply {
+                if (message == "Unauthorized") {
+                    emit(TemplateResponse(success = false, message = message, data = emptyList()))
+                    return@flow
+                }
+                emit(this)
+            }
         }.catch { e ->
             emit(TemplateResponse(success = false, message = e.message.toString(), data = emptyList()))
         }
@@ -59,10 +73,11 @@ class ArticleRepository (
         private var instance: ArticleRepository? = null
         fun getInstance(
             apiService: ApiService,
+            userPreference: UserPreference,
             bookmarkArticleDao: BookmarkArticleDao
         ): ArticleRepository =
             instance ?: synchronized(this) {
-                instance ?: ArticleRepository(bookmarkArticleDao, apiService)
+                instance ?: ArticleRepository(bookmarkArticleDao, userPreference, apiService)
             }.also { instance = it }
     }
 }

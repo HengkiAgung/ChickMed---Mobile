@@ -1,6 +1,7 @@
 package com.example.submission1.data.remote.retrofit
 
 import com.example.chickmed.data.model.ArticleModel
+import com.example.chickmed.data.model.UserModel
 import com.example.chickmed.data.remote.response.MessageResponse
 import com.example.chickmed.data.remote.response.TemplateResponse
 import okhttp3.MultipartBody
@@ -10,6 +11,7 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -19,23 +21,33 @@ import retrofit2.http.Query
 interface ApiService {
     @FormUrlEncoded
     @POST("register")
+    @Headers("Accept: application/json")
     suspend fun register(
         @Field("name") name: String,
         @Field("email") email: String,
-        @Field("password") password: String
-    ): Response<MessageResponse>
+        @Field("password") password: String,
+        @Field("confirm_password") confirm_password: String
+    ): Response<TemplateResponse<UserModel>>
 
     @FormUrlEncoded
     @POST("login")
+    @Headers("Accept: application/json")
     suspend fun login(
         @Field("email") email: String,
         @Field("password") password: String
-    ): Response<Any>
+    ): Response<TemplateResponse<UserModel>>
 
+    @FormUrlEncoded
+    @Headers("Accept: application/json")
+    suspend fun getUser(
+        @Header("Authorization") token: String,
+        @Header("Accept") accept: String = "application/json"
+    ): Response<TemplateResponse<UserModel>>
 
     @GET("articles")
+    @Headers("Accept: application/json")
     suspend fun getArticles(
-        @Query("page") page: Int
+        @Query("page") page: Int,
     ): Response<TemplateResponse<List<ArticleModel>>>
 
 //    @GET("stories/{id}")

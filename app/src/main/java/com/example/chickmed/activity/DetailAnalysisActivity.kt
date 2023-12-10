@@ -53,7 +53,9 @@ class DetailAnalysisActivity : ComponentActivity() {
                             )
                         },
                     ) { paddingValue ->
-                        DetailAnalysisScreen(id = idReport, modifier = Modifier.padding(paddingValue))
+                        DetailAnalysisScreen(id = idReport, modifier = Modifier.padding(paddingValue), redirectToWelcome = {
+                            activity?.finish()
+                        })
                     }
                 }
             }

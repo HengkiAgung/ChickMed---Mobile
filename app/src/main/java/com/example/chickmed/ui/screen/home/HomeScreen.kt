@@ -26,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,8 +64,7 @@ import java.util.Objects
 
 @Composable
 fun HomeScreen(
-    name: String,
-    image: String,
+    redirectToWelcome: () -> Unit,
     viewModel: HomeViewModel = viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
     ),
@@ -90,14 +90,11 @@ fun HomeScreen(
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ){
-        if (it)
-        {
+    ) {
+        if (it) {
             Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
             cameraLauncher.launch(uri)
-        }
-        else
-        {
+        } else {
             Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
         }
     }
@@ -115,30 +112,44 @@ fun HomeScreen(
             )
             .verticalScroll(rememberScrollState())
     ) {
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, bottom = 50.dp, top = 50.dp)
-        ) {
-            AsyncImage(
-                model = image,
-                contentDescription = "Profile Image",
-                contentScale = ContentScale.Crop,
+        viewModel.user.collectAsState(initial = UiState.Loading).value.let { user ->
+            Column(
                 modifier = modifier
-                    .padding(4.dp)
-                    .size(60.dp)
-                    .clip(CircleShape)
-            )
-            Text(
-                text = "Welcome !",
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(
-                text = name,
-            )
-            Text(
-                text = "How are you today?",
-            )
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp, bottom = 50.dp, top = 50.dp)
+            ) {
+                when (user) {
+                    is UiState.Loading -> {
+                        LoadingIndicator()
+                        viewModel.getUser()
+                    }
+                    is UiState.Success -> {
+                        AsyncImage(
+                            model = user.data.profile,
+                            contentDescription = "Profile Image",
+                            contentScale = ContentScale.Crop,
+                            modifier = modifier
+                                .padding(4.dp)
+                                .size(60.dp)
+                                .clip(CircleShape)
+                        )
+                        Text(
+                            text = "Welcome !",
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Text(
+                            text = user.data.name,
+                        )
+                        Text(
+                            text = "How are you today?",
+                        )
+                    }
+                    is UiState.Error -> {
+                        ErrorMessage(message = user.errorMessage)
+                    }
+                    else -> {}
+                }
+            }
         }
         Column(
             modifier = modifier
@@ -163,12 +174,9 @@ fun HomeScreen(
                         val permissionCheckResult =
                             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
 
-                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED)
-                        {
+                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
                             cameraLauncher.launch(uri)
-                        }
-                        else
-                        {
+                        } else {
                             permissionLauncher.launch(Manifest.permission.CAMERA)
                         }
                     },
@@ -245,6 +253,18 @@ fun HomeScreen(
 
                     is UiState.Error -> {
                         ErrorMessage(message = articles.errorMessage)
+                    }
+
+                    is UiState.Unauthorized -> {
+                        DisposableEffect(key1 = articles ){
+                            when (articles) {
+                                is UiState.Unauthorized -> {
+                                    redirectToWelcome()
+                                }
+                                else -> {}
+                            }
+                            onDispose {  }
+                        }
                     }
                 }
             }

@@ -33,6 +33,7 @@ import com.example.chickmed.ui.state.UiState
 @Composable
 fun DetailAnalysisScreen(
     id: Int,
+    redirectToWelcome: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DetailAnalysisViewModel = viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
@@ -117,6 +118,10 @@ fun DetailAnalysisScreen(
 
             is UiState.Error -> {
                 ErrorMessage(message = report.errorMessage, modifier = modifier)
+            }
+
+            is UiState.Unauthorized -> {
+                redirectToWelcome()
             }
         }
     }

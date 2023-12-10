@@ -31,6 +31,7 @@ import com.example.chickmed.ui.state.UiState
 @Composable
 fun DetailArticleScreen(
     id: Int,
+    redirectToWelcome: () -> Unit,
     viewModel: DetailArticleViewModel = viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
     ),
@@ -113,6 +114,10 @@ fun DetailArticleScreen(
 
             is UiState.Error -> {
                 ErrorMessage(message = article.errorMessage, modifier = modifier)
+            }
+
+            is UiState.Unauthorized -> {
+                redirectToWelcome()
             }
         }
     }

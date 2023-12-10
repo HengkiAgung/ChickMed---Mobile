@@ -55,6 +55,7 @@ import com.example.chickmed.ui.theme.ChickMedTheme
 @Composable
 fun WelcomeScreen(
     modifier: Modifier = Modifier,
+    message: String,
     navController: NavHostController = rememberNavController(),
 ) {
 
@@ -86,7 +87,15 @@ fun WelcomeScreen(
                     .padding(start = 10.dp, top = 10.dp, bottom = 10.dp)
             )
             Spacer(modifier = Modifier.height(20.dp))
-
+            if (message.isNotEmpty()) {
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Red,
+                    modifier = modifier
+                        .padding(start = 10.dp, bottom = 10.dp)
+                )
+            }
             Text(
                 text = "Login to Keep",
                 style = MaterialTheme.typography.titleMedium,
@@ -147,6 +156,6 @@ fun WelcomeScreen(
 @Preview(showBackground = true)
 fun WelcomeScreenPreview() {
     ChickMedTheme {
-        WelcomeScreen()
+        WelcomeScreen(message = "")
     }
 }

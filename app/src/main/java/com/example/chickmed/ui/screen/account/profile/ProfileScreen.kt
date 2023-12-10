@@ -53,6 +53,7 @@ import com.example.chickmed.ui.state.UiState
 
 @Composable
 fun ProfileScreen(
+    redirectToWelcome: (String) -> Unit,
     viewModel: ProfileViewModel = viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
     ),
@@ -199,11 +200,14 @@ fun ProfileScreen(
                                             .fillMaxWidth()
                                             .background(Color.White)
                                             .padding(20.dp)
+                                            .clickable {
+                                                viewModel.logout()
+                                                redirectToWelcome("")
+                                            },
                                     ){
                                         Icon(
                                             imageVector = ImageVector.vectorResource(id = R.drawable.baseline_logout),
                                             contentDescription = "Log Out",
-                                            modifier = modifier.clickable { },
                                         )
                                         Spacer(modifier = modifier.width(8.dp))
                                         Column {
@@ -297,6 +301,10 @@ fun ProfileScreen(
 
             is UiState.Error -> {
                 ErrorMessage(message = user.errorMessage, modifier = modifier)
+            }
+
+            is UiState.Unauthorized -> {
+                redirectToWelcome("Session is expired")
             }
         }
     }

@@ -50,6 +50,7 @@ import com.example.chickmed.ui.theme.ChickMedTheme
 
 @Composable
 fun ReportsScreen(
+    redirectToWelcome: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ReportViewModel = viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
@@ -80,6 +81,10 @@ fun ReportsScreen(
 
                 is UiState.Error -> {
                     ErrorMessage(message = summary.errorMessage)
+                }
+
+                is UiState.Unauthorized -> {
+                    redirectToWelcome()
                 }
             }
 
@@ -170,6 +175,10 @@ fun ReportsScreen(
 
                 is UiState.Error -> {
                     ErrorMessage(message = reports.errorMessage)
+                }
+
+                is UiState.Unauthorized -> {
+                    redirectToWelcome()
                 }
             }
         }

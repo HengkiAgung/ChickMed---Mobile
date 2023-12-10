@@ -3,11 +3,13 @@ package com.example.chickmed.ui.screen
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.chickmed.AppViewModel
 import com.example.chickmed.data.di.Injection
 import com.example.chickmed.data.repository.ArticleRepository
 import com.example.chickmed.data.repository.ReportRepository
 import com.example.chickmed.data.repository.ScheduleRepository
 import com.example.chickmed.data.repository.UserRepository
+import com.example.chickmed.ui.screen.Auth.AuthViewModel
 import com.example.chickmed.ui.screen.account.profile.ProfileViewModel
 import com.example.chickmed.ui.screen.analysis.detail_analysis.DetailAnalysisViewModel
 import com.example.chickmed.ui.screen.analysis.report.ReportViewModel
@@ -37,6 +39,8 @@ class ViewModelFactory(
         DetailArticleViewModel::class.java to { DetailArticleViewModel(articleRepository) },
         ProfileViewModel::class.java to { ProfileViewModel(userRepository) },
         DetailAnalysisViewModel::class.java to { DetailAnalysisViewModel(reportRepository) },
+        AuthViewModel::class.java to { AuthViewModel(userRepository) },
+        AppViewModel::class.java to { AppViewModel(userRepository) },
     )
 
     @Suppress("UNCHECKED_CAST")

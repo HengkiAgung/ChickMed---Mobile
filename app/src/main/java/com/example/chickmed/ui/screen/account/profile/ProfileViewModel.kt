@@ -24,8 +24,14 @@ class ProfileViewModel (
                     _user.value = UiState.Error(it.message.toString())
                 }
                 .collect { user ->
-                    _user.value = UiState.Success(user)
+                    _user.value = UiState.Success(user.data)
                 }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            userRepository.logOut()
         }
     }
 }

@@ -43,6 +43,7 @@ import com.example.chickmed.ui.state.UiState
 
 @Composable
 fun ScheduleScreen(
+    redirectToWelcome: () -> Unit,
     onScheduleClick: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: ScheduleViewModel = viewModel(
@@ -218,6 +219,10 @@ fun ScheduleScreen(
                     message = schedule.errorMessage,
                     modifier = modifier
                 )
+            }
+
+            is UiState.Unauthorized -> {
+                redirectToWelcome()
             }
         }
     }

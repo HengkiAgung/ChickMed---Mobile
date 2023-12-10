@@ -27,8 +27,6 @@ class HomeViewModel(
 
     fun getArticles(page: Int) {
         viewModelScope.launch {
-//            userRepository.getUser()
-//            userRepository.saveUser(FakeDataSource.dummyUser.id, FakeDataSource.dummyUser.name, FakeDataSource.dummyUser.profile, FakeDataSource.dummyUser.token)
             articleRepository.getArticles(page = page)
                 .catch {
                     _articles.value = UiState.Error(it.message.toString())
@@ -36,6 +34,10 @@ class HomeViewModel(
                 .collect { articles ->
                     try {
                         if (!articles.success) {
+                            if (articles.message == "Unauthorized") {
+                                _articles.value = UiState.Unauthorized
+                                return@collect
+                            }
                             _articles.value = UiState.Error(articles.message)
                             return@collect
                         }
@@ -49,12 +51,16 @@ class HomeViewModel(
 
     fun getUser() {
         viewModelScope.launch {
-            userRepository.getUser()
+            userRepository.getUserPreference()
                 .catch {
                     _user.value = UiState.Error(it.message.toString())
                 }
                 .collect { user ->
-                    _user.value = UiState.Success(user)
+                    try {
+                        _user.value = UiState.Success(user)
+                    } catch (e: Exception) {
+                        _user.value = UiState.Error(e.message.toString())
+                    }
                 }
         }
     }

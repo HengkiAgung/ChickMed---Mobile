@@ -27,30 +27,65 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.chickmed.data.model.UserModel
 import com.example.chickmed.ui.navigation.Screen
+import com.example.chickmed.ui.screen.ViewModelFactory
+import com.example.chickmed.ui.state.UiState
 import com.example.chickmed.ui.theme.ChickMedTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     navController: NavHostController,
+    redirectToHome: () -> Unit = {},
+    viewModel: AuthViewModel = viewModel(
+        factory = ViewModelFactory.getInstance(LocalContext.current)
+    ),
 ) {
+    val user: UiState<UserModel> by viewModel.user
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var signIn by remember { mutableStateOf("Sign In") }
+    var error by remember { mutableStateOf("") }
+
+
+    DisposableEffect(key1 = user ){
+        when (user) {
+            is UiState.Loading -> {
+                signIn = "Loading..."
+            }
+            is UiState.Error -> {
+                signIn = "Sign In"
+                error = (user as UiState.Error).errorMessage
+            }
+            is UiState.Success -> {
+                redirectToHome()
+            }
+            else -> {}
+        }
+        onDispose {  }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -61,7 +96,9 @@ fun LoginScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Back"
@@ -83,6 +120,12 @@ fun LoginScreen(
                     .fillMaxSize()
                     .padding(16.dp),
             ) {
+                Text(
+                    text = error,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Red
+                )
+
                 TextField(
                     value = email,
                     onValueChange = { email = it },
@@ -114,17 +157,13 @@ fun LoginScreen(
 
                 Button(
                     onClick = {
-                        navController.navigate(Screen.Home.route) {
-                            popUpTo(Screen.Welcome.route) {
-                                inclusive = true
-                            }
-                        }
+                        if (signIn != "Loading...") viewModel.login(email, password)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
                 ) {
-                    Text("Sign In")
+                    Text(signIn)
                 }
                 Spacer(modifier = Modifier.height(30.dp))
 
