@@ -1,7 +1,15 @@
 package com.example.chickmed
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,6 +43,7 @@ import com.example.chickmed.ui.screen.home.HomeScreen
 import com.example.chickmed.ui.screen.schedule.ScheduleScreen
 import com.example.chickmed.ui.state.UiState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChickMedApp(
     modifier: Modifier = Modifier,
@@ -57,7 +66,7 @@ fun ChickMedApp(
 
     val checkToken by viewModel.isHaveToken
 
-    LaunchedEffect(key1 = checkToken){
+    LaunchedEffect(key1 = checkToken) {
         viewModel.checkToken()
     }
 
@@ -65,11 +74,35 @@ fun ChickMedApp(
         is UiState.Loading -> {
             SplashScreen()
         }
+
         is UiState.Success -> {
             Scaffold(
+                topBar = {
+                    if (currentRoute == Screen.MyAccount.route) {
+                        TopAppBar(
+                            title = {
+                                Text(
+                                    text = "Detail Account",
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                            },
+                            navigationIcon = {
+                                IconButton(onClick = {
+                                    navController.popBackStack()
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.ArrowBack,
+                                        contentDescription = "Back"
+                                    )
+                                }
+                            }
+
+                        )
+                    }
+                },
                 bottomBar =
                 {
-                    if (currentRoute != Screen.Login.route && currentRoute != Screen.Welcome.route && currentRoute != Screen.Register.route && currentRoute != null){
+                    if (currentRoute != Screen.Login.route && currentRoute != Screen.Welcome.route && currentRoute != Screen.Register.route && currentRoute != null) {
                         BottomBar(navController)
                     }
                 },
@@ -78,7 +111,7 @@ fun ChickMedApp(
             { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = if ( (checkToken as UiState.Success<Boolean>).data ) {
+                    startDestination = if ((checkToken as UiState.Success<Boolean>).data) {
                         Screen.Home.route
                     } else {
                         Screen.Welcome.route
@@ -106,7 +139,7 @@ fun ChickMedApp(
                             redirectToMyAccount = { navController.navigate(Screen.MyAccount.route) }
                         )
                     }
-                    composable(Screen.MyAccount.route){
+                    composable(Screen.MyAccount.route) {
                         MyAccountScreen(
                             redirectToWelcome = { redirectToWelcome("Session is expired") },
                         )
@@ -135,6 +168,7 @@ fun ChickMedApp(
                 }
             }
         }
+
         else -> {}
     }
 }

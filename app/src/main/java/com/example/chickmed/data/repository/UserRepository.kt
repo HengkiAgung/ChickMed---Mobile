@@ -1,5 +1,6 @@
 package com.example.chickmed.data.repository
 
+import android.util.Log
 import com.example.chickmed.data.model.UserModel
 import com.example.chickmed.data.local.preference.UserPreference
 import com.example.chickmed.data.remote.response.TemplateResponse
@@ -17,47 +18,75 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
-class UserRepository (
+class UserRepository(
     private val userPreference: UserPreference,
     private val apiService: ApiService
 ) {
     fun login(email: String, password: String) = flow {
-            val login = apiService.login(email, password)
-            if (!login.isSuccessful) {
-                val message = login.processError()
+        val login = apiService.login(email, password)
+        if (!login.isSuccessful) {
+            val message = login.processError()
 
-                emit(TemplateResponse(success = false, message = message, data = UserModel(0, "", "", "", "")))
-                return@flow
-            }
-
-            login.body()?.let {
-                saveUser(it.data.id, it.data.email, it.data.name, it.data.profile ?: "", it.data.token)
-                emit(it)
-            }
-        }.catch { e ->
-            emit(TemplateResponse(success = false, message = e.message.toString(), data = UserModel(0, "", "", "", "")))
+            emit(
+                TemplateResponse(
+                    success = false,
+                    message = message,
+                    data = UserModel(0, "", "", "", "")
+                )
+            )
+            return@flow
         }
+
+        login.body()?.let {
+            saveUser(it.data.id, it.data.email, it.data.name, it.data.profile ?: "", it.data.token)
+            emit(it)
+        }
+    }.catch { e ->
+        emit(
+            TemplateResponse(
+                success = false,
+                message = e.message.toString(),
+                data = UserModel(0, "", "", "", "")
+            )
+        )
+    }
 
     fun register(name: String, email: String, password: String, confirm_password: String) = flow {
-            val register = apiService.register(name, email, "", password, confirm_password)
-            if (!register.isSuccessful) {
-                val message = register.processError()
+        val register = apiService.register(name, email, "", password, confirm_password)
+        if (!register.isSuccessful) {
+            val message = register.processError()
 
-                emit(TemplateResponse(success = false, message = message, data = UserModel(0, "", "", "", "")))
-                return@flow
-            }
-
-            register.body()?.apply {
-                saveUser(data.id, data.email, data.name, data.profile ?: "", data.token)
-                emit(this)
-            }
-        }.catch { e ->
-            emit(TemplateResponse(success = false, message = e.message.toString(), data = UserModel(0, "", "", "", "")))
+            emit(
+                TemplateResponse(
+                    success = false,
+                    message = message,
+                    data = UserModel(0, "", "", "", "")
+                )
+            )
+            return@flow
         }
 
+        register.body()?.apply {
+            saveUser(data.id, data.email, data.name, data.profile ?: "", data.token)
+            emit(this)
+        }
+    }.catch { e ->
+        emit(
+            TemplateResponse(
+                success = false,
+                message = e.message.toString(),
+                data = UserModel(0, "", "", "", "")
+            )
+        )
+    }
+
     fun getUser(): Flow<TemplateResponse<UserModel>> {
+        val userPreference = runBlocking {
+            userPreference.getUser().first()
+        }
+
         return flow {
-            val userPreference =  userPreference.getUser().first()
+            Log.d("UserRepository", "getUser: ${userPreference.token}")
             val user = apiService.getUser(token = userPreference.token)
             if (!user.isSuccessful) {
                 val message = user.processError()
@@ -65,16 +94,28 @@ class UserRepository (
                     logOut()
                 }
 
-                emit(TemplateResponse(success = false, message = message, data = UserModel(0, "", "", "", "")))
+                emit(
+                    TemplateResponse(
+                        success = false,
+                        message = message,
+                        data = UserModel(0, "", "", "", "")
+                    )
+                )
                 return@flow
             }
 
             user.body()?.apply {
-                saveUser(data.id, data.email, data.name, data.profile ?: "", data.token)
+                saveUser(data.id, data.email, data.name, data.profile ?: "", getToken())
                 emit(this)
             }
         }.catch { e ->
-            emit(TemplateResponse(success = false, message = e.message.toString(), data = UserModel(0, "", "", "", "")))
+            emit(
+                TemplateResponse(
+                    success = false,
+                    message = e.message.toString(),
+                    data = UserModel(0, "", "", "", "")
+                )
+            )
         }
     }
 
@@ -93,26 +134,79 @@ class UserRepository (
         return true
     }
 
-    fun updateUser(name: String, profile: File, email: String, password: String) = flow {
-            val userPreference =  userPreference.getUser().first()
-            val requestProfile = profile.asRequestBody("image/jpeg".toMediaType())
-            val multipartPhoto = MultipartBody.Part.createFormData("photo", profile.name, requestProfile)
+    fun updateUser(name: String, profile: File, email: String) = flow {
+        val userPreference = userPreference.getUser().first()
+        val requestProfile = profile.asRequestBody("image/jpeg".toMediaType())
+        val multipartPhoto =
+            MultipartBody.Part.createFormData("photo", profile.name, requestProfile)
 
-            val user = apiService.updateUser(token = userPreference.token, profile = multipartPhoto, name = name, email = email, password = password)
-            if (!user.isSuccessful) {
-                val message = user.processError()
+        val user = apiService.updateUser(
+            token = userPreference.token,
+            profile = multipartPhoto,
+            name = name,
+            email = email,
+        )
+        if (!user.isSuccessful) {
+            val message = user.processError()
 
-                emit(TemplateResponse(success = false, message = message, data = UserModel(0, "", "", "", "")))
-                return@flow
-            }
-
-            user.body()?.apply {
-                saveUser(data.id, data.email, data.name, data.profile ?: "", data.token)
-                emit(this)
-            }
-        }.catch { e ->
-            emit(TemplateResponse(success = false, message = e.message.toString(), data = UserModel(0, "", "", "", "")))
+            emit(
+                TemplateResponse(
+                    success = false,
+                    message = message,
+                    data = UserModel(0, "", "", "", "")
+                )
+            )
+            return@flow
         }
+
+        user.body()?.apply {
+            saveUser(data.id, data.email, data.name, data.profile ?: "", data.token)
+            emit(this)
+        }
+    }.catch { e ->
+        emit(
+            TemplateResponse(
+                success = false,
+                message = e.message.toString(),
+                data = UserModel(0, "", "", "", "")
+            )
+        )
+    }
+
+//    fun changePassword(oldPassword: String, newPassword: String, confirmPassword: String) = flow {
+//        val userPreference = userPreference.getUser().first()
+//        val user = apiService.changePassword(
+//            token = userPreference.token,
+//            oldPassword = oldPassword,
+//            newPassword = newPassword,
+//            confirmPassword = confirmPassword
+//        )
+//        if (!user.isSuccessful) {
+//            val message = user.processError()
+//
+//            emit(
+//                TemplateResponse(
+//                    success = false,
+//                    message = message,
+//                    data = UserModel(0, "", "", "", "")
+//                )
+//            )
+//            return@flow
+//        }
+//
+//        user.body()?.apply {
+//            saveUser(data.id, data.email, data.name, data.profile ?: "", data.token)
+//            emit(this)
+//        }
+//    }.catch { e ->
+//        emit(
+//            TemplateResponse(
+//                success = false,
+//                message = e.message.toString(),
+//                data = UserModel(0, "", "", "", "")
+//            )
+//        )
+//    }
 
     companion object {
         @Volatile
@@ -124,6 +218,7 @@ class UserRepository (
             instance ?: synchronized(this) {
                 instance ?: UserRepository(userPreference, apiService)
             }.also {
-                instance = it }
+                instance = it
+            }
     }
 }

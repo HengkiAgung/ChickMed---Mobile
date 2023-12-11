@@ -64,7 +64,6 @@ interface ApiService {
         @Field("name") name: String,
         @Field("profile") profile: MultipartBody.Part,
         @Field("email") email: String,
-        @Field("password") password: String
     ): Response<TemplateResponse<UserModel>>
 //
 //    @Multipart

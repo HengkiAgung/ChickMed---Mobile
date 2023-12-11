@@ -71,7 +71,6 @@ fun MyAccountScreen(
     var error by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     val context = LocalContext.current
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val bitMap = remember { mutableStateOf<Bitmap?>(null) }
@@ -126,9 +125,9 @@ fun MyAccountScreen(
                             }
                         }
 
-                        if (imageUri != null) {
+                        if (imageUri == null) {
                             AsyncImage(
-                                model = user.data.profile,
+                                model = if(user.data.profile.isNotEmpty()) user.data.profile else "https://www.its.ac.id/international/wp-content/uploads/sites/66/2020/02/blank-profile-picture-973460_1280-1.jpg",
                                 contentDescription = "Profile Image",
                                 contentScale = ContentScale.Crop,
                                 modifier = modifier
@@ -170,21 +169,6 @@ fun MyAccountScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        TextField(
-                            value = password,
-                            onValueChange = { password = it },
-                            label = { Text("Password") },
-                            leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
-                            visualTransformation = PasswordVisualTransformation(),
-                            keyboardOptions = KeyboardOptions.Default.copy(
-                                keyboardType = KeyboardType.Password,
-                                imeAction = ImeAction.Done
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                        )
-
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Button(
@@ -194,7 +178,6 @@ fun MyAccountScreen(
                                         name,
                                         it.toFile(),
                                         email,
-                                        password
                                     )
                                 }
                             },
