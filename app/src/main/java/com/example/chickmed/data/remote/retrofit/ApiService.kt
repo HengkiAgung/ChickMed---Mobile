@@ -2,7 +2,6 @@ package com.example.submission1.data.remote.retrofit
 
 import com.example.chickmed.data.model.ArticleModel
 import com.example.chickmed.data.model.UserModel
-import com.example.chickmed.data.remote.response.MessageResponse
 import com.example.chickmed.data.remote.response.TemplateResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -25,6 +24,7 @@ interface ApiService {
     suspend fun register(
         @Field("name") name: String,
         @Field("email") email: String,
+        @Field("profile") profile: String,
         @Field("password") password: String,
         @Field("confirm_password") confirm_password: String
     ): Response<TemplateResponse<UserModel>>
@@ -37,11 +37,10 @@ interface ApiService {
         @Field("password") password: String
     ): Response<TemplateResponse<UserModel>>
 
-    @FormUrlEncoded
+    @GET("user")
     @Headers("Accept: application/json")
     suspend fun getUser(
         @Header("Authorization") token: String,
-        @Header("Accept") accept: String = "application/json"
     ): Response<TemplateResponse<UserModel>>
 
     @GET("articles")
@@ -50,11 +49,23 @@ interface ApiService {
         @Query("page") page: Int,
     ): Response<TemplateResponse<List<ArticleModel>>>
 
-//    @GET("stories/{id}")
-//    suspend fun getDetailArticle(
-//        @Header("Authorization") token: String,
-//        @Path("id") id: String
-//    ): Response<ArticleResponse.ArticleItem>
+    @GET("articles/{id}")
+    @Headers("Accept: application/json")
+    suspend fun getArticleById(
+        @Path("id") id: Int
+    ): Response<TemplateResponse<ArticleModel>>
+
+    @Multipart
+    @FormUrlEncoded
+    @POST("update/user")
+    @Headers("Accept: application/json")
+    suspend fun updateUser(
+        @Header("Authorization") token: String,
+        @Field("name") name: String,
+        @Field("profile") profile: MultipartBody.Part,
+        @Field("email") email: String,
+        @Field("password") password: String
+    ): Response<TemplateResponse<UserModel>>
 //
 //    @Multipart
 //    @POST("stories")

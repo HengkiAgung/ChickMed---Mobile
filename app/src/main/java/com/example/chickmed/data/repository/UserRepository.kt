@@ -11,6 +11,11 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 
 class UserRepository (
     private val userPreference: UserPreference,
@@ -19,7 +24,7 @@ class UserRepository (
     fun login(email: String, password: String) = flow {
             val login = apiService.login(email, password)
             if (!login.isSuccessful) {
-                val message = login.errorBody()?.string().processError()
+                val message = login.processError()
 
                 emit(TemplateResponse(success = false, message = message, data = UserModel(0, "", "", "", "")))
                 return@flow
@@ -34,9 +39,9 @@ class UserRepository (
         }
 
     fun register(name: String, email: String, password: String, confirm_password: String) = flow {
-            val register = apiService.register(name, email, password, confirm_password)
+            val register = apiService.register(name, email, "", password, confirm_password)
             if (!register.isSuccessful) {
-                val message = register.errorBody()?.string().processError()
+                val message = register.processError()
 
                 emit(TemplateResponse(success = false, message = message, data = UserModel(0, "", "", "", "")))
                 return@flow
@@ -55,7 +60,10 @@ class UserRepository (
             val userPreference =  userPreference.getUser().first()
             val user = apiService.getUser(token = userPreference.token)
             if (!user.isSuccessful) {
-                val message = user.errorBody()?.string().processError()
+                val message = user.processError()
+                if (message == "Unauthorized") {
+                    logOut()
+                }
 
                 emit(TemplateResponse(success = false, message = message, data = UserModel(0, "", "", "", "")))
                 return@flow
@@ -84,6 +92,27 @@ class UserRepository (
 
         return true
     }
+
+    fun updateUser(name: String, profile: File, email: String, password: String) = flow {
+            val userPreference =  userPreference.getUser().first()
+            val requestProfile = profile.asRequestBody("image/jpeg".toMediaType())
+            val multipartPhoto = MultipartBody.Part.createFormData("photo", profile.name, requestProfile)
+
+            val user = apiService.updateUser(token = userPreference.token, profile = multipartPhoto, name = name, email = email, password = password)
+            if (!user.isSuccessful) {
+                val message = user.processError()
+
+                emit(TemplateResponse(success = false, message = message, data = UserModel(0, "", "", "", "")))
+                return@flow
+            }
+
+            user.body()?.apply {
+                saveUser(data.id, data.email, data.name, data.profile ?: "", data.token)
+                emit(this)
+            }
+        }.catch { e ->
+            emit(TemplateResponse(success = false, message = e.message.toString(), data = UserModel(0, "", "", "", "")))
+        }
 
     companion object {
         @Volatile

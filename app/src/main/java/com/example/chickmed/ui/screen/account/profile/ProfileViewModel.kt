@@ -19,12 +19,19 @@ class ProfileViewModel (
 
     fun getUser() {
         viewModelScope.launch {
-            userRepository.getUser()
+            if (_user.value is UiState.Success) {
+                return@launch
+            }
+            userRepository.getUserPreference()
                 .catch {
                     _user.value = UiState.Error(it.message.toString())
                 }
                 .collect { user ->
-                    _user.value = UiState.Success(user.data)
+                    try {
+                        _user.value = UiState.Success(user)
+                    } catch (e: Exception) {
+                        _user.value = UiState.Error(e.message.toString())
+                    }
                 }
         }
     }

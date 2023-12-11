@@ -27,6 +27,9 @@ class HomeViewModel(
 
     fun getArticles(page: Int) {
         viewModelScope.launch {
+            if (_articles.value is UiState.Success) {
+                return@launch
+            }
             articleRepository.getArticles(page = page)
                 .catch {
                     _articles.value = UiState.Error(it.message.toString())
@@ -51,6 +54,9 @@ class HomeViewModel(
 
     fun getUser() {
         viewModelScope.launch {
+            if (_user.value is UiState.Success) {
+                return@launch
+            }
             userRepository.getUserPreference()
                 .catch {
                     _user.value = UiState.Error(it.message.toString())

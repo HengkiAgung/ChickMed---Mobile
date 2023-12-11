@@ -24,7 +24,19 @@ class DetailArticleViewModel (
                     _article.value = UiState.Error(it.message.toString())
                 }
                 .collect { article ->
-                    _article.value = UiState.Success(article)
+                    try {
+                        if (!article.success) {
+                            if (article.message == "Unauthorized") {
+                                _article.value = UiState.Unauthorized
+                                return@collect
+                            }
+                            _article.value = UiState.Error(article.message)
+                            return@collect
+                        }
+                        _article.value = UiState.Success(article.data)
+                    } catch (e: Exception) {
+                        _article.value = UiState.Error(e.message.toString())
+                    }
                 }
         }
     }

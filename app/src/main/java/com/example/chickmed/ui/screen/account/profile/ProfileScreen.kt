@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import coil.compose.AsyncImage
 import com.example.chickmed.R
 import com.example.chickmed.ui.component.respond.ErrorMessage
@@ -54,6 +55,7 @@ import com.example.chickmed.ui.state.UiState
 @Composable
 fun ProfileScreen(
     redirectToWelcome: (String) -> Unit,
+    redirectToMyAccount: () -> Unit,
     viewModel: ProfileViewModel = viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
     ),
@@ -142,6 +144,9 @@ fun ProfileScreen(
                                             .fillMaxWidth()
                                             .background(Color.White)
                                             .padding(20.dp)
+                                            .clickable {
+                                                redirectToMyAccount()
+                                            }
                                     ){
                                         Icon(
                                             imageVector = Icons.Default.Person,

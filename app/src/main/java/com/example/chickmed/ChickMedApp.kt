@@ -28,6 +28,7 @@ import com.example.chickmed.ui.screen.Auth.RegisterScreen
 import com.example.chickmed.ui.screen.Auth.WelcomeScreen
 import com.example.chickmed.ui.screen.SplashScreen.SplashScreen
 import com.example.chickmed.ui.screen.ViewModelFactory
+import com.example.chickmed.ui.screen.account.my_account.MyAccountScreen
 import com.example.chickmed.ui.screen.account.profile.ProfileScreen
 import com.example.chickmed.ui.screen.analysis.report.ReportsScreen
 import com.example.chickmed.ui.screen.home.HomeScreen
@@ -45,7 +46,7 @@ fun ChickMedApp(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     var message by remember { mutableStateOf("") }
-    fun redirectToWelcome(messageParam: String = "Session is expired") {
+    val redirectToWelcome = { messageParam: String ->
         message = messageParam
         navController.navigate(Screen.Welcome.route) {
             popUpTo(navController.graph.id) {
@@ -68,7 +69,7 @@ fun ChickMedApp(
             Scaffold(
                 bottomBar =
                 {
-                    if (currentRoute != Screen.Login.route && currentRoute != Screen.Welcome.route && currentRoute != Screen.Register.route) {
+                    if (currentRoute != Screen.Login.route && currentRoute != Screen.Welcome.route && currentRoute != Screen.Register.route && currentRoute != null){
                         BottomBar(navController)
                     }
                 },
@@ -86,22 +87,28 @@ fun ChickMedApp(
                 ) {
                     composable(Screen.Home.route) {
                         HomeScreen(
-                            redirectToWelcome = { redirectToWelcome() }
+                            redirectToWelcome = { redirectToWelcome("Session is expired") }
                         )
                     }
                     composable(Screen.Reports.route) {
                         ReportsScreen(
-                            redirectToWelcome = { redirectToWelcome() }
+                            redirectToWelcome = { redirectToWelcome("Session is expired") }
                         )
                     }
                     composable(Screen.Schedule.route) {
                         ScheduleScreen(
-                            redirectToWelcome = { redirectToWelcome() }
+                            redirectToWelcome = { redirectToWelcome("Session is expired") }
                         )
                     }
                     composable(Screen.Profile.route) {
                         ProfileScreen(
-                            redirectToWelcome = { redirectToWelcome(messageParam = "") },
+                            redirectToWelcome = { redirectToWelcome("") },
+                            redirectToMyAccount = { navController.navigate(Screen.MyAccount.route) }
+                        )
+                    }
+                    composable(Screen.MyAccount.route){
+                        MyAccountScreen(
+                            redirectToWelcome = { redirectToWelcome("Session is expired") },
                         )
                     }
                     composable(Screen.Welcome.route) {
