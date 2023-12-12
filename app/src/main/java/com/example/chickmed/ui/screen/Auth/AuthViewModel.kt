@@ -29,6 +29,10 @@ class AuthViewModel (
                 .collect { data ->
                     try {
                         if (!data.success) {
+                            if (data.message == "Unauthorized") {
+                                _user.value = UiState.Error("Email or Password is incorrect. Please try again.")
+                                return@collect
+                            }
                             _user.value = UiState.Error(data.message)
                             return@collect
                         }

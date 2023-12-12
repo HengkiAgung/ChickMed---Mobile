@@ -43,11 +43,11 @@ fun BottomBar(navController: NavHostController, modifier: Modifier = Modifier) {
                 icon = ImageVector.vectorResource(id = R.drawable.baseline_list),
                 screen = Screen.Reports
             ),
-            NavigationItem(
-                title = stringResource(R.string.schedule_nav),
-                icon = ImageVector.vectorResource(id = R.drawable.baseline_access_time),
-                screen = Screen.Schedule
-            ),
+//            NavigationItem(
+//                title = stringResource(R.string.schedule_nav),
+//                icon = ImageVector.vectorResource(id = R.drawable.baseline_access_time),
+//                screen = Screen.Schedule
+//            ),
             NavigationItem(
                 title = stringResource(R.string.profile_nav),
                 icon = Icons.Default.AccountCircle,
@@ -55,6 +55,9 @@ fun BottomBar(navController: NavHostController, modifier: Modifier = Modifier) {
             ),
         )
         navigationItems.map { item ->
+            var isSelected: Boolean = currentRoute == item.screen.route
+            if (item.screen.route == Screen.Profile.route && (currentRoute == Screen.ChangePassword.route || currentRoute == Screen.MyAccount.route)) isSelected = true
+
             NavigationBarItem(
                 icon = {
                     Icon(
@@ -63,7 +66,7 @@ fun BottomBar(navController: NavHostController, modifier: Modifier = Modifier) {
                     )
                 },
                 label = { Text(item.title) },
-                selected = currentRoute == item.screen.route,
+                selected = isSelected,
                 onClick = {
                     navController.navigate(item.screen.route) {
                         popUpTo(navController.graph.findStartDestination().id) {

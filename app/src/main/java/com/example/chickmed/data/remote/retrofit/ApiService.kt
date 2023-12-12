@@ -1,6 +1,8 @@
 package com.example.submission1.data.remote.retrofit
 
 import com.example.chickmed.data.model.ArticleModel
+import com.example.chickmed.data.model.ReportModel
+import com.example.chickmed.data.model.SummaryModel
 import com.example.chickmed.data.model.UserModel
 import com.example.chickmed.data.remote.response.TemplateResponse
 import okhttp3.MultipartBody
@@ -55,17 +57,45 @@ interface ApiService {
         @Path("id") id: Int
     ): Response<TemplateResponse<ArticleModel>>
 
+    @GET("reports")
+    @Headers("Accept: application/json")
+    suspend fun getReports(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int,
+    ): Response<TemplateResponse<List<ReportModel>>>
+
+    @GET("reports/detail/{id}")
+    @Headers("Accept: application/json")
+    suspend fun getReportById(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Response<TemplateResponse<ReportModel>>
+
+    @GET("summary")
+    @Headers("Accept: application/json")
+    suspend fun getSummary(
+        @Header("Authorization") token: String,
+    ): Response<TemplateResponse<SummaryModel>>
+
     @Multipart
-    @FormUrlEncoded
     @POST("update/user")
     @Headers("Accept: application/json")
     suspend fun updateUser(
         @Header("Authorization") token: String,
-        @Field("name") name: String,
-        @Field("profile") profile: MultipartBody.Part,
-        @Field("email") email: String,
+        @Part("name") name: String,
+        @Part profile: MultipartBody.Part?,
+        @Part("email") email: String,
     ): Response<TemplateResponse<UserModel>>
-//
+
+    @FormUrlEncoded
+    @POST("change/password")
+    @Headers("Accept: application/json")
+    suspend fun changePassword(
+        @Header("Authorization") token: String,
+        @Field("password") password: String,
+        @Field("confirm_password") confirm_password: String,
+    ): Response<TemplateResponse<Boolean>>
+
 //    @Multipart
 //    @POST("stories")
 //    suspend fun addArticle(

@@ -36,6 +36,7 @@ import com.example.chickmed.ui.screen.Auth.RegisterScreen
 import com.example.chickmed.ui.screen.Auth.WelcomeScreen
 import com.example.chickmed.ui.screen.SplashScreen.SplashScreen
 import com.example.chickmed.ui.screen.ViewModelFactory
+import com.example.chickmed.ui.screen.account.change_password.ChangePasswordScreen
 import com.example.chickmed.ui.screen.account.my_account.MyAccountScreen
 import com.example.chickmed.ui.screen.account.profile.ProfileScreen
 import com.example.chickmed.ui.screen.analysis.report.ReportsScreen
@@ -78,11 +79,11 @@ fun ChickMedApp(
         is UiState.Success -> {
             Scaffold(
                 topBar = {
-                    if (currentRoute == Screen.MyAccount.route) {
+                    if (currentRoute == Screen.MyAccount.route || currentRoute == Screen.ChangePassword.route) {
                         TopAppBar(
                             title = {
                                 Text(
-                                    text = "Detail Account",
+                                    text = if(currentRoute == Screen.MyAccount.route) "Detail Account" else "Change Password",
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                             },
@@ -120,7 +121,16 @@ fun ChickMedApp(
                 ) {
                     composable(Screen.Home.route) {
                         HomeScreen(
-                            redirectToWelcome = { redirectToWelcome("Session is expired") }
+                            redirectToWelcome = { redirectToWelcome("Session is expired") },
+                            redirectToReport = {
+                                navController.navigate(Screen.Reports.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    restoreState = true
+                                    launchSingleTop = true
+                                }
+                            },
                         )
                     }
                     composable(Screen.Reports.route) {
@@ -136,11 +146,17 @@ fun ChickMedApp(
                     composable(Screen.Profile.route) {
                         ProfileScreen(
                             redirectToWelcome = { redirectToWelcome("") },
-                            redirectToMyAccount = { navController.navigate(Screen.MyAccount.route) }
+                            redirectToMyAccount = { navController.navigate(Screen.MyAccount.route) },
+                            redirectToChangePassword = { navController.navigate(Screen.ChangePassword.route) }
                         )
                     }
                     composable(Screen.MyAccount.route) {
                         MyAccountScreen(
+                            redirectToWelcome = { redirectToWelcome("Session is expired") },
+                        )
+                    }
+                    composable(Screen.ChangePassword.route) {
+                        ChangePasswordScreen(
                             redirectToWelcome = { redirectToWelcome("Session is expired") },
                         )
                     }

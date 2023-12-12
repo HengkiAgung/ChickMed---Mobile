@@ -10,6 +10,7 @@ import com.example.chickmed.data.repository.ReportRepository
 import com.example.chickmed.data.repository.ScheduleRepository
 import com.example.chickmed.data.repository.UserRepository
 import com.example.chickmed.ui.screen.Auth.AuthViewModel
+import com.example.chickmed.ui.screen.account.change_password.ChangePasswordViewModel
 import com.example.chickmed.ui.screen.account.my_account.MyAccountViewModel
 import com.example.chickmed.ui.screen.account.profile.ProfileViewModel
 import com.example.chickmed.ui.screen.analysis.detail_analysis.DetailAnalysisViewModel
@@ -43,6 +44,7 @@ class ViewModelFactory(
         DetailAnalysisViewModel::class.java to { DetailAnalysisViewModel(reportRepository) },
         AuthViewModel::class.java to { AuthViewModel(userRepository) },
         AppViewModel::class.java to { AppViewModel(userRepository) },
+        ChangePasswordViewModel::class.java to { ChangePasswordViewModel(userRepository) },
     )
 
     @Suppress("UNCHECKED_CAST")
@@ -61,7 +63,7 @@ class ViewModelFactory(
                 INSTANCE ?: ViewModelFactory(
                     Injection.provideArticleRepository(context),
                     Injection.provideUserRepository(context),
-                    ReportRepository.getInstance(),
+                    Injection.provideReportRepository(context),
                     Injection.provideScheduleRepository(context)
                 )
             }.also { INSTANCE = it }

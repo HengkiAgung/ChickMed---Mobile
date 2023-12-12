@@ -1,5 +1,6 @@
 package com.example.chickmed.ui.screen.account.my_account
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +60,9 @@ import com.example.chickmed.ui.component.respond.LoadingIndicator
 import com.example.chickmed.ui.navigation.Screen
 import com.example.chickmed.ui.screen.ViewModelFactory
 import com.example.chickmed.ui.state.UiState
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 @Composable
 fun MyAccountScreen(
@@ -71,6 +76,9 @@ fun MyAccountScreen(
     var error by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var user by remember { mutableStateOf(UserModel(0, "", "", "", "")) }
+    var message by remember { mutableStateOf("") }
+
     val context = LocalContext.current
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val bitMap = remember { mutableStateOf<Bitmap?>(null) }
@@ -79,125 +87,56 @@ fun MyAccountScreen(
             imageUri = it
         }
 
-    viewModel.user.collectAsState(initial = UiState.Loading).value.let { user ->
-        when (user) {
+    fun createCustomTempFile(context: Context): File {
+        val filesDir = context.externalCacheDir
+        return File.createTempFile("profile", ".jpg", filesDir)
+    }
+
+    fun uriToFile(uri: Uri): File {
+        val myFile = createCustomTempFile(context)
+        val inputStream = context.contentResolver.openInputStream(uri) as InputStream
+        val outputStream = FileOutputStream(myFile)
+        val buffer = ByteArray(1024)
+        var length: Int
+        while (inputStream.read(buffer).also { length = it } > 0) outputStream.write(buffer, 0, length)
+        outputStream.close()
+        inputStream.close()
+
+        return myFile
+
+    }
+
+    LaunchedEffect(key1 = user) {
+        viewModel.getUser()
+    }
+
+    viewModel.user.collectAsState(initial = UiState.Loading).value.let { respond ->
+        when (respond) {
             is UiState.Loading -> {
                 LoadingIndicator()
-                viewModel.getUser()
             }
 
             is UiState.Success -> {
-                Box(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                    ) {
-                        imageUri?.let {
-                            if (Build.VERSION.SDK_INT < 28) {
-                                bitMap.value = MediaStore.Images.Media.getBitmap(
-                                    context.contentResolver,
-                                    imageUri
-                                )
-                            } else {
-                                val source =
-                                    ImageDecoder.createSource(context.contentResolver, imageUri!!)
-                                bitMap.value = ImageDecoder.decodeBitmap(source)
-                            }
+                user = respond.data
+                if (submit == "Loading...") message = "Update Success"
+                submit = "Submit"
 
-                            bitMap.value?.let {
-                                Image(
-                                    bitmap = it.asImageBitmap(),
-                                    contentDescription = "Profile Image",
-                                    contentScale = ContentScale.Crop,
-                                    modifier = modifier
-                                        .padding(4.dp)
-                                        .size(60.dp)
-                                        .clip(CircleShape)
-                                        .clickable {
-                                            launcher.launch("image/*")
-                                        }
-                                )
-                            }
-                        }
+                DisposableEffect(key1 = user){
+                    if (name == "") name = user.name
+                    if (email == "") email = user.email
 
-                        if (imageUri == null) {
-                            AsyncImage(
-                                model = if(user.data.profile.isNotEmpty()) user.data.profile else "https://www.its.ac.id/international/wp-content/uploads/sites/66/2020/02/blank-profile-picture-973460_1280-1.jpg",
-                                contentDescription = "Profile Image",
-                                contentScale = ContentScale.Crop,
-                                modifier = modifier
-                                    .padding(4.dp)
-                                    .size(60.dp)
-                                    .clip(CircleShape)
-                                    .clickable {
-                                        launcher.launch("image/*")
-                                    }
-                            )
-                        }
-                        Text(
-                            text = error,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.Red
-                        )
-
-                        TextField(
-                            value = name,
-                            onValueChange = { name = it },
-                            label = { Text("Name") },
-                            leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        TextField(
-                            value = email,
-                            onValueChange = { email = it },
-                            label = { Text("Email") },
-                            leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Button(
-                            onClick = {
-                                if (submit != "Loading...") imageUri?.let {
-                                    viewModel.updateUser(
-                                        name,
-                                        it.toFile(),
-                                        email,
-                                    )
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                        ) {
-                            Text(submit)
-                        }
-                    }
+                    onDispose { }
                 }
             }
 
             is UiState.Error -> {
-                ErrorMessage(message = user.errorMessage)
+                error = respond.errorMessage
+                submit = "Submit"
             }
 
             is UiState.Unauthorized -> {
-                DisposableEffect(key1 = user) {
-                    when (user) {
+                DisposableEffect(key1 = respond) {
+                    when (respond) {
                         is UiState.Unauthorized -> {
                             redirectToWelcome()
                         }
@@ -208,6 +147,124 @@ fun MyAccountScreen(
                 }
             }
         }
+    }
 
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        ) {
+            Text(
+                text =  message,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Green
+            )
+            Text(
+                text = error,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Red
+            )
+
+            imageUri?.let {
+                if (Build.VERSION.SDK_INT < 28) {
+                    bitMap.value = MediaStore.Images.Media.getBitmap(
+                        context.contentResolver,
+                        imageUri
+                    )
+                } else {
+                    val source =
+                        ImageDecoder.createSource(context.contentResolver, imageUri!!)
+                    bitMap.value = ImageDecoder.decodeBitmap(source)
+                }
+
+                bitMap.value?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = "Profile Image",
+                        contentScale = ContentScale.Crop,
+                        modifier = modifier
+                            .padding(4.dp)
+                            .size(60.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                launcher.launch("image/*")
+                            }
+                    )
+                }
+            }
+
+            if (imageUri == null) {
+                AsyncImage(
+                    model = if(user.profile.isNotEmpty()) user.profile else "https://www.its.ac.id/international/wp-content/uploads/sites/66/2020/02/blank-profile-picture-973460_1280-1.jpg",
+                    contentDescription = "Profile Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = modifier
+                        .padding(4.dp)
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .clickable {
+                            launcher.launch("image/*")
+                        }
+                )
+            }
+            TextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Name") },
+                leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    if (submit != "Loading..." ) {
+                        submit = "Loading..."
+                        message = ""
+                        error = ""
+                        if (imageUri == null){
+                            viewModel.updateUser(
+                                name = name,
+                                profile = null,
+                                email = email,
+                            )
+                        } else {
+                            viewModel.updateUser(
+                                name,
+                                uriToFile(imageUri!!),
+                                email,
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+            ) {
+                Text(submit)
+            }
+        }
     }
 }

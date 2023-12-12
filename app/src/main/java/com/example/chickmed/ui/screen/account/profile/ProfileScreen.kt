@@ -56,6 +56,7 @@ import com.example.chickmed.ui.state.UiState
 fun ProfileScreen(
     redirectToWelcome: (String) -> Unit,
     redirectToMyAccount: () -> Unit,
+    redirectToChangePassword: () -> Unit,
     viewModel: ProfileViewModel = viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
     ),
@@ -84,7 +85,7 @@ fun ProfileScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-
+                                        redirectToMyAccount()
                                     }
                             ) {
                                 Row (
@@ -119,7 +120,6 @@ fun ProfileScreen(
                                     Icon(
                                         imageVector = Icons.Default.Edit,
                                         contentDescription = "Edit Button",
-                                        modifier = modifier.clickable { },
                                     )
                                 }
                             }
@@ -176,6 +176,9 @@ fun ProfileScreen(
                                             .fillMaxWidth()
                                             .background(Color.White)
                                             .padding(20.dp)
+                                            .clickable {
+                                                redirectToChangePassword()
+                                            }
                                     ){
                                         Icon(
                                             imageVector = Icons.Default.Lock,

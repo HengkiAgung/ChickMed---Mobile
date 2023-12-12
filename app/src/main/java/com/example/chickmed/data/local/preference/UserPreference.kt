@@ -25,7 +25,7 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
             it[name] = user.name
             it[email] = user.email
             it[profile] = if (user.profile.isNullOrBlank()) "https://www.its.ac.id/international/wp-content/uploads/sites/66/2020/02/blank-profile-picture-973460_1280-1.jpg" else user.profile
-            it[token] = "Bearer ${user.token}"
+            it[token] = if (user.token.contains("Bearer")) user.token else "Bearer ${user.token}"
         }
     }
 

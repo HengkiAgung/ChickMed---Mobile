@@ -12,8 +12,11 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
@@ -105,7 +108,7 @@ class UserRepository(
             }
 
             user.body()?.apply {
-                saveUser(data.id, data.email, data.name, data.profile ?: "", getToken())
+//                saveUser(data.id, data.email, data.name, data.profile ?: "", getToken())
                 emit(this)
             }
         }.catch { e ->
@@ -134,11 +137,14 @@ class UserRepository(
         return true
     }
 
-    fun updateUser(name: String, profile: File, email: String) = flow {
+    fun updateUser(name: String, profile: File?, email: String) = flow {
         val userPreference = userPreference.getUser().first()
-        val requestProfile = profile.asRequestBody("image/jpeg".toMediaType())
-        val multipartPhoto =
-            MultipartBody.Part.createFormData("photo", profile.name, requestProfile)
+
+        val multipartPhoto = if (profile != null) MultipartBody.Part.createFormData(
+            "profile",
+            profile.name,
+            profile.asRequestBody("image/jpeg".toMediaType())
+        ) else null
 
         val user = apiService.updateUser(
             token = userPreference.token,
@@ -153,14 +159,14 @@ class UserRepository(
                 TemplateResponse(
                     success = false,
                     message = message,
-                    data = UserModel(0, "", "", "", "")
+                    data = UserModel(0, "", "", "", userPreference.token)
                 )
             )
             return@flow
         }
 
         user.body()?.apply {
-            saveUser(data.id, data.email, data.name, data.profile ?: "", data.token)
+            saveUser(data.id, data.email, data.name, data.profile ?: "", userPreference.token)
             emit(this)
         }
     }.catch { e ->
@@ -173,40 +179,38 @@ class UserRepository(
         )
     }
 
-//    fun changePassword(oldPassword: String, newPassword: String, confirmPassword: String) = flow {
-//        val userPreference = userPreference.getUser().first()
-//        val user = apiService.changePassword(
-//            token = userPreference.token,
-//            oldPassword = oldPassword,
-//            newPassword = newPassword,
-//            confirmPassword = confirmPassword
-//        )
-//        if (!user.isSuccessful) {
-//            val message = user.processError()
-//
-//            emit(
-//                TemplateResponse(
-//                    success = false,
-//                    message = message,
-//                    data = UserModel(0, "", "", "", "")
-//                )
-//            )
-//            return@flow
-//        }
-//
-//        user.body()?.apply {
-//            saveUser(data.id, data.email, data.name, data.profile ?: "", data.token)
-//            emit(this)
-//        }
-//    }.catch { e ->
-//        emit(
-//            TemplateResponse(
-//                success = false,
-//                message = e.message.toString(),
-//                data = UserModel(0, "", "", "", "")
-//            )
-//        )
-//    }
+    fun changePassword(newPassword: String, confirmPassword: String) = flow {
+        val userPreference = userPreference.getUser().first()
+        val user = apiService.changePassword(
+            token = userPreference.token,
+            password = newPassword,
+            confirm_password = confirmPassword
+        )
+        if (!user.isSuccessful) {
+            val message = user.processError()
+
+            emit(
+                TemplateResponse(
+                    success = false,
+                    message = message,
+                    data = false
+                )
+            )
+            return@flow
+        }
+
+        user.body()?.apply {
+            emit(this)
+        }
+    }.catch { e ->
+        emit(
+            TemplateResponse(
+                success = false,
+                message = e.message.toString(),
+                data = false
+            )
+        )
+    }
 
     companion object {
         @Volatile

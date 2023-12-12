@@ -64,6 +64,7 @@ import java.util.Objects
 
 @Composable
 fun HomeScreen(
+    redirectToReport: () -> Unit,
     redirectToWelcome: () -> Unit,
     viewModel: HomeViewModel = viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
@@ -169,7 +170,7 @@ fun HomeScreen(
             ) {
                 ButtonActionMenu(
                     text = "Check Up",
-                    icon = R.drawable.stethoscope,
+                    icon = R.drawable.camera_solid,
                     onClick = {
                         val permissionCheckResult =
                             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
@@ -181,11 +182,18 @@ fun HomeScreen(
                         }
                     },
                 )
+//                ButtonActionMenu(
+//                    text = "Schedule",
+//                    icon = R.drawable.clock,
+//                    onClick = {
+////                        navController.navigate(Screen.Schedule.route)
+//                    },
+//                )
                 ButtonActionMenu(
-                    text = "Schedule",
-                    icon = R.drawable.clock,
+                    text = "Reports",
+                    icon = R.drawable.stethoscope,
                     onClick = {
-//                        navController.navigate(Screen.Schedule.route)
+                        redirectToReport()
                     },
                 )
                 ButtonActionMenu(

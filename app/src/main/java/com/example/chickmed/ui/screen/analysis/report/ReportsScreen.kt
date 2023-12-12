@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +23,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +47,7 @@ import coil.compose.AsyncImage
 import com.example.chickmed.R
 import com.example.chickmed.activity.DetailAnalysisActivity
 import com.example.chickmed.activity.DetailArticleActivity
+import com.example.chickmed.data.model.SummaryModel
 import com.example.chickmed.ui.component.article.ArticleItem
 import com.example.chickmed.ui.component.respond.ErrorMessage
 import com.example.chickmed.ui.component.respond.LoadingIndicator
@@ -56,133 +63,140 @@ fun ReportsScreen(
         factory = ViewModelFactory.getInstance(LocalContext.current)
     ),
 ) {
+    var page by remember { mutableStateOf(1) }
     val activity = LocalContext.current as Activity
     val context = LocalContext.current
+    val summaryState by viewModel.summary
 
-    Column(
-        modifier = modifier
-            .padding(start = 20.dp, top = 20.dp, end = 20.dp)
+    LaunchedEffect(key1 = summaryState) {
+        viewModel.getSummary()
+    }
 
-    ) {
-        viewModel.summary.collectAsState(initial = UiState.Loading).value.let { summary ->
-            when (summary) {
-                is UiState.Loading -> {
-                    LoadingIndicator()
-                    viewModel.getSummary()
-                }
-
-                is UiState.Success -> {
-                    SummaryContent(
-                        detection_in_a_month = summary.data.detection_in_a_month.toString(),
-                        sick_chicken = summary.data.sick_chicken.toString(),
-                        healthy = summary.data.healthy.toString(),
-                    )
-                }
-
-                is UiState.Error -> {
-                    ErrorMessage(message = summary.errorMessage)
-                }
-
-                is UiState.Unauthorized -> {
-                    redirectToWelcome()
-                }
+    viewModel.reports.collectAsState(initial = UiState.Loading).value.let { reports ->
+        when (reports) {
+            is UiState.Loading -> {
+                LoadingIndicator()
+                viewModel.getReports(page)
             }
 
-        }
-        Spacer(modifier = modifier.height(20.dp))
-        Text(
-            text = "Latest report",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = modifier
-                .padding(start = 10.dp, top = 10.dp, bottom = 10.dp)
-        )
-        viewModel.reports.collectAsState(initial = UiState.Loading).value.let { reports ->
-            when (reports) {
-                is UiState.Loading -> {
-                    LoadingIndicator()
-                    viewModel.getReports()
-                }
+            is UiState.Success -> {
+                LazyColumn (
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
+                    modifier = modifier
+                        .fillMaxSize()
+                ) {
+                    item {
+                        when (summaryState) {
+                            is UiState.Loading -> {
+                                LoadingIndicator()
+                            }
 
-                is UiState.Success -> {
-                    LazyColumn {
-                        if (reports.data.isEmpty()) {
-                            item {
-                                ErrorMessage(message = "No Report found")
+                            is UiState.Success -> {
+                                SummaryContent(
+                                    detection_in_a_month = (summaryState as UiState.Success<SummaryModel>).data.total.toString(),
+                                    sick_chicken = (summaryState as UiState.Success<SummaryModel>).data.sickChick.toString(),
+                                    healthy = (summaryState as UiState.Success<SummaryModel>).data.healthyChick.toString(),
+                                )
+                            }
+
+                            is UiState.Error -> {
+                                ErrorMessage(message = (summaryState as UiState.Error).errorMessage)
+                            }
+
+                            is UiState.Unauthorized -> {
+                                redirectToWelcome()
                             }
                         }
-                        items(reports.data, key = { it.id }) {
 
-                            ElevatedCard(
-                                elevation = CardDefaults.cardElevation(
-                                    defaultElevation = 6.dp
-                                ),
+                        Spacer(modifier = modifier.height(20.dp))
+                        Text(
+                            text = "Latest report",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = modifier
+                                .padding(start = 10.dp, top = 10.dp, bottom = 10.dp)
+                        )
+                    }
+                    if (reports.data.isEmpty()) {
+                        item {
+                            ErrorMessage(message = "No Report found")
+                        }
+                    }
+                    items(reports.data, key = { it.id }) {
 
+                        ElevatedCard(
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 6.dp
+                            ),
+
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    top = 10.dp,
+                                    bottom = 8.dp,
+                                    start = 10.dp,
+                                    end = 10.dp,
+                                )
+                                .background(Color.White)
+                                .clickable {
+                                    activity.startActivity(
+                                        Intent(
+                                            context,
+                                            DetailAnalysisActivity::class.java
+                                        ).putExtra("id_report", it.id)
+                                    )
+                                }
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
                                 modifier = modifier
                                     .fillMaxWidth()
-                                    .padding(
-                                        top = 10.dp,
-                                        bottom = 8.dp,
-                                        start = 10.dp,
-                                        end = 10.dp,
-                                    )
                                     .background(Color.White)
-                                    .clickable {
-                                        activity.startActivity(
-                                            Intent(context, DetailAnalysisActivity::class.java).putExtra("id_report", it.id)
-                                        )
-                                    }
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
+                                Image(
+                                    painter = painterResource(R.drawable.report_placeholder),
+                                    contentDescription = "Report ${it.date}",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = modifier
+                                        .padding(4.dp)
+                                        .size(100.dp)
+                                        .clip(MaterialTheme.shapes.medium)
+                                )
+                                Column(
                                     modifier = modifier
                                         .fillMaxWidth()
-                                        .background(Color.White)
+                                        .padding(8.dp)
                                 ) {
-                                    Image(
-                                        painter = painterResource(R.drawable.report_placeholder),
-                                        contentDescription = "Report ${it.date}",
-                                        contentScale = ContentScale.Crop,
-                                        modifier = modifier
-                                            .padding(4.dp)
-                                            .size(100.dp)
-                                            .clip(MaterialTheme.shapes.medium)
+                                    Text(
+                                        text = "${it.report_disease.count().toString()} Diseases",
+                                        fontSize = 15.sp,
+                                        color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                        modifier = modifier.testTag("ArticleTitle")
                                     )
-                                    Column(
+                                    Text(
+                                        text = it.date,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Light,
+                                        fontStyle = FontStyle.Italic,
+                                        color = MaterialTheme.colorScheme.onTertiaryContainer,
                                         modifier = modifier
-                                            .fillMaxWidth()
-                                            .padding(8.dp)
-                                    ) {
-                                        Text(
-                                            text = "${it.diseases.count().toString()} Diseases",
-                                            fontSize = 15.sp,
-                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                            modifier = modifier.testTag("ArticleTitle")
-                                        )
-                                        Text(
-                                            text = it.date,
-                                            fontSize = 12.sp,
-                                            fontWeight = FontWeight.Light,
-                                            fontStyle = FontStyle.Italic,
-                                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                                            modifier = modifier
-                                        )
-                                    }
+                                    )
                                 }
                             }
                         }
                     }
                 }
+            }
 
-                is UiState.Error -> {
-                    ErrorMessage(message = reports.errorMessage)
-                }
+            is UiState.Error -> {
+//                ErrorMessage(message = reports.errorMessage)
+            }
 
-                is UiState.Unauthorized -> {
-                    redirectToWelcome()
-                }
+            is UiState.Unauthorized -> {
+                redirectToWelcome()
             }
         }
     }
+
 }
 
 @Composable
@@ -215,7 +229,7 @@ fun SummaryContent(
             ) {
                 Column {
                     Text(
-                        text = "Detection in a month",
+                        text = "Summary Detection",
                         style = MaterialTheme.typography.titleLarge,
                         modifier = modifier
                             .padding(10.dp)

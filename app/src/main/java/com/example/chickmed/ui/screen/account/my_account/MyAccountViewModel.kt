@@ -45,7 +45,7 @@ class MyAccountViewModel (
         }
     }
 
-    fun updateUser(name: String, profile: File, email: String) {
+    fun updateUser(name: String, profile: File?, email: String) {
         _user.value = UiState.Loading
         viewModelScope.launch {
             userRepository.updateUser(name = name, profile = profile, email = email)

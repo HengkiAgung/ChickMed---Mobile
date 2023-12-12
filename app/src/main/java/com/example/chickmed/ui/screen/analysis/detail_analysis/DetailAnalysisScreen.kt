@@ -29,6 +29,7 @@ import com.example.chickmed.ui.component.respond.ErrorMessage
 import com.example.chickmed.ui.component.respond.LoadingIndicator
 import com.example.chickmed.ui.screen.ViewModelFactory
 import com.example.chickmed.ui.state.UiState
+import kotlin.math.roundToInt
 
 @Composable
 fun DetailAnalysisScreen(
@@ -49,14 +50,14 @@ fun DetailAnalysisScreen(
             is UiState.Success -> {
                 LazyColumn(
                     modifier = modifier
-                        .padding(20.dp)
+                        .padding(horizontal = 20.dp)
                 ) {
                     item {
                         Row (
                             horizontalArrangement = Arrangement.SpaceEvenly,
                         ){
                             AsyncImage(
-                                model = report.data.resultImage,
+                                model = report.data.result_image,
                                 contentDescription = "Report ${report.data.date} Image",
                                 alignment = Alignment.Center,
                                 contentScale = ContentScale.Crop,
@@ -76,10 +77,6 @@ fun DetailAnalysisScreen(
                                     color = Color.Gray,
                                 )
                                 Text(
-                                    text = "80%",
-                                    color = MaterialTheme.colorScheme.primary,
-                                )
-                                Text(
                                     text = "Disease Detection",
                                     color = Color.Gray,
                                 )
@@ -88,14 +85,26 @@ fun DetailAnalysisScreen(
                         }
                     }
 
-                    items(report.data.diseases) { report ->
+                    items(report.data.report_disease, key = { it.id }) { report ->
+                        var confidance = (report.confidence.toFloat() * 100).roundToInt()
                         Column {
+                            Spacer(modifier = Modifier.height(30.dp))
+                            Divider(thickness = 1.dp)
+                            Spacer(modifier = Modifier.height(30.dp))
+                            Row {
+                                Text(
+                                    text = report.diseases.name,
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                Spacer(modifier = Modifier.width(20.dp))
+                                Text(
+                                    text = "$confidance %",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
                             Text(
-                                text = report.name,
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            Text(
-                                text = report.description,
+                                text = report.diseases.description,
                                 color = Color.Gray,
                             )
                             Spacer(modifier = Modifier.height(20.dp))
@@ -104,11 +113,10 @@ fun DetailAnalysisScreen(
                                 style = MaterialTheme.typography.titleMedium,
                             )
                             Text(
-                                text = report.solution,
+                                text = report.diseases.solution,
                                 color = Color.Gray,
                             )
                             Spacer(modifier = Modifier.height(30.dp))
-                            Divider(thickness = 1.dp)
                             Spacer(modifier = Modifier.height(30.dp))
                         }
                     }

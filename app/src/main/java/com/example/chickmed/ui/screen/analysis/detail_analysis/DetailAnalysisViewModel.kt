@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class DetailAnalysisViewModel(
-    private val repository: ReportRepository
+    private val reportRepository: ReportRepository
 ) : ViewModel() {
     private val _report: MutableStateFlow<UiState<ReportModel>> = MutableStateFlow(UiState.Loading)
     val report: StateFlow<UiState<ReportModel>>
@@ -19,12 +19,24 @@ class DetailAnalysisViewModel(
 
     fun getReportById(id: Int) {
         viewModelScope.launch {
-            repository.getReportById(id)
+            reportRepository.getReportById(id = id)
                 .catch {
                     _report.value = UiState.Error(it.message.toString())
                 }
-                .collect { report ->
-                    _report.value = UiState.Success(report)
+                .collect { articles ->
+                    try {
+                        if (!articles.success) {
+                            if (articles.message == "Unauthorized") {
+                                _report.value = UiState.Unauthorized
+                                return@collect
+                            }
+                            _report.value = UiState.Error(articles.message)
+                            return@collect
+                        }
+                        _report.value = UiState.Success(articles.data)
+                    } catch (e: Exception) {
+                        _report.value = UiState.Error(e.message.toString())
+                    }
                 }
         }
     }
