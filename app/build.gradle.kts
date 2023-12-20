@@ -7,15 +7,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.chickmed"
+    namespace = "bangkit.product.chickmed"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.chickmed"
+        applicationId = "bangkit.product.chickmed"
         minSdk = 24
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 4
+        versionName = "1.7.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -82,6 +82,7 @@ dependencies {
     // UI
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation("androidx.core:core-splashscreen:1.0.0")
 
     // navigation
     implementation("androidx.navigation:navigation-compose:2.6.0")
