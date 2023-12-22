@@ -44,11 +44,16 @@ fun BottomBar(navController: NavHostController, modifier: Modifier = Modifier) {
                 icon = ImageVector.vectorResource(id = R.drawable.baseline_list),
                 screen = Screen.Reports
             ),
-//            NavigationItem(
-//                title = stringResource(R.string.schedule_nav),
-//                icon = ImageVector.vectorResource(id = R.drawable.baseline_access_time),
-//                screen = Screen.Schedule
-//            ),
+            NavigationItem(
+                title = stringResource(R.string.consult_nav),
+                icon = ImageVector.vectorResource(id = R.drawable.comments_regular),
+                screen = Screen.Consult
+            ),
+            NavigationItem(
+                title = stringResource(R.string.schedule_nav),
+                icon = ImageVector.vectorResource(id = R.drawable.baseline_access_time),
+                screen = Screen.Schedule
+            ),
             NavigationItem(
                 title = stringResource(R.string.profile_nav),
                 icon = Icons.Default.AccountCircle,

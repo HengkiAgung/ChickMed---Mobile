@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,15 +21,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import bangkit.product.chickmed.notification.DailyReminder
 import bangkit.product.chickmed.ui.component.BottomBar
 import bangkit.product.chickmed.ui.navigation.Screen
-import bangkit.product.chickmed.ui.screen.Auth.AuthViewModel
 import bangkit.product.chickmed.ui.screen.Auth.LoginScreen
 import bangkit.product.chickmed.ui.screen.Auth.RegisterScreen
 import bangkit.product.chickmed.ui.screen.Auth.WelcomeScreen
@@ -40,7 +37,9 @@ import bangkit.product.chickmed.ui.screen.account.change_password.ChangePassword
 import bangkit.product.chickmed.ui.screen.account.my_account.MyAccountScreen
 import bangkit.product.chickmed.ui.screen.account.profile.ProfileScreen
 import bangkit.product.chickmed.ui.screen.analysis.report.ReportsScreen
+import bangkit.product.chickmed.ui.screen.consult.ConsultScreen
 import bangkit.product.chickmed.ui.screen.home.HomeScreen
+import bangkit.product.chickmed.ui.screen.schedule.AddScheduleScreen
 import bangkit.product.chickmed.ui.screen.schedule.ScheduleScreen
 import bangkit.product.chickmed.ui.state.UiState
 
@@ -64,6 +63,8 @@ fun ChickMedApp(
             }
         }
     }
+
+    val context = LocalContext.current
 
     val checkToken by viewModel.isHaveToken
 
@@ -137,9 +138,21 @@ fun ChickMedApp(
                             redirectToWelcome = { redirectToWelcome("Session is expired") }
                         )
                     }
+                    composable(Screen.Consult.route) {
+                        ConsultScreen()
+                    }
                     composable(Screen.Schedule.route) {
                         ScheduleScreen(
-                            redirectToWelcome = { redirectToWelcome("Session is expired") }
+                            redirectToWelcome = { redirectToWelcome("Session is expired") },
+                            redirectToAddSchedule = { navController.navigate(Screen.AddSchedule.route) }
+                        )
+                    }
+                    composable(Screen.AddSchedule.route) {
+                        AddScheduleScreen(
+                            onSave = {
+                                navController.popBackStack()
+                                DailyReminder().setDailyReminder(context = context)
+                            },
                         )
                     }
                     composable(Screen.Profile.route) {

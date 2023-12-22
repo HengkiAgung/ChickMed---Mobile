@@ -2,10 +2,12 @@
     <string name="app_name">ChickMed</string>
     <string name="home_nav">Home</string>
     <string name="reports_nav">Reports</string>
+    <string name="consult_nav">Consult</string>
     <string name="schedule_nav">Schedule</string>
     <string name="profile_nav">Profile</string>
     <string name="title_activity_article">ArticleActivity</string>
     <string name="title_activity_detail_article">Detail Article</string>
     <string name="title_activity_camera">CameraActivity</string>
     <string name="title_activity_detail_analysis">DetailAnalysisActivity</string>
+    <string name="today_schedule">Today\'s Schedule</string>
 </resources>

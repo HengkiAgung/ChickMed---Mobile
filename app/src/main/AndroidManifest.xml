@@ -9,6 +9,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:usesCleartextTraffic="true"
         android:allowBackup="true"
@@ -56,6 +60,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/path_provider" />
         </provider>
-    </application>
 
+        <receiver
+            android:name=".notification.DailyReminder"
+            android:enabled="true"
+            android:exported="false" />
+    </application>
 </manifest>

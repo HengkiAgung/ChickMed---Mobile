@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "schedule")
 data class ScheduleModel(
-    @field:PrimaryKey
+    @field:PrimaryKey(autoGenerate = true)
     @field:ColumnInfo(name = "id")
     val id: Int = 0,
     @field:ColumnInfo(name = "title")

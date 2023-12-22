@@ -1,4 +1,4 @@
-package bangkit.product.chickmed.data.local.room.schedule
+package bangkit.product.chickmed.data.local.room
 
 import android.content.Context
 import androidx.room.Database

@@ -3,8 +3,7 @@ package bangkit.product.chickmed.data.di
 import android.content.Context
 import bangkit.product.chickmed.data.local.preference.UserPreference
 import bangkit.product.chickmed.data.local.preference.dataStore
-import bangkit.product.chickmed.data.local.room.bookmark.BookmarkArticleDatabase
-import bangkit.product.chickmed.data.local.room.schedule.ScheduleDatabase
+import bangkit.product.chickmed.data.local.room.ScheduleDatabase
 import bangkit.product.chickmed.data.remote.retrofit.ApiConfig
 import bangkit.product.chickmed.data.repository.ArticleRepository
 import bangkit.product.chickmed.data.repository.ReportRepository
@@ -14,10 +13,8 @@ import bangkit.product.chickmed.data.repository.UserRepository
 object Injection {
     fun provideArticleRepository(context: Context): ArticleRepository {
         val apiService = ApiConfig.getApiService()
-        val favoriteDatabase = BookmarkArticleDatabase.getInstance(context)
-        val favoriteDao = favoriteDatabase.bookmarkArticleDao()
         val userPreference = UserPreference.getInstance(context.dataStore)
-        return ArticleRepository.getInstance(bookmarkArticleDao = favoriteDao, apiService = apiService, userPreference = userPreference)
+        return ArticleRepository.getInstance(apiService = apiService, userPreference = userPreference)
     }
 
     fun provideUserRepository(context: Context): UserRepository {

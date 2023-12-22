@@ -9,7 +9,10 @@ sealed class Screen(val route: String) {
 
     // Schedule
     data object Schedule : Screen("schedule")
+    data object AddSchedule : Screen("addschedule")
 
+    // Consult
+    data object Consult : Screen("consult")
 
     // Article
     data object DetailArticle : Screen("detail/{id}") {

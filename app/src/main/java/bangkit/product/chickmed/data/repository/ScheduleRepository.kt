@@ -1,7 +1,6 @@
 package bangkit.product.chickmed.data.repository
 
-import bangkit.product.chickmed.data.local.room.bookmark.BookmarkArticleDao
-import bangkit.product.chickmed.data.local.room.schedule.ScheduleDao
+import bangkit.product.chickmed.data.local.room.ScheduleDao
 import bangkit.product.chickmed.data.model.ScheduleModel
 
 class ScheduleRepository (
@@ -14,6 +13,8 @@ class ScheduleRepository (
     fun getScheduleList() = ScheduleDao.getSchedule()
 
     fun getScheduleById(id: Int) = ScheduleDao.getScheduleById(id)
+
+    fun getTodaySchedule(day: String) = ScheduleDao.getTodaySchedule(day)
 
     suspend fun deleteSchedule(id: Int) = ScheduleDao.deleteSchedule(id)
 

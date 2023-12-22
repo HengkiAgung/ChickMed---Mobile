@@ -50,6 +50,14 @@ fun Response<*>.processError(): String {
     }
 }
 
+fun String.truncate(length: Int): String {
+    return if (this.length > length) {
+        this.substring(0, length) + "..."
+    } else {
+        this
+    }
+}
+
 fun createCustomTempFile(context: Context): File {
     val filesDir = context.externalCacheDir
     return File.createTempFile("profile", ".jpg", filesDir)

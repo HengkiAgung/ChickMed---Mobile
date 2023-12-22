@@ -1,4 +1,4 @@
-package bangkit.product.chickmed.data.local.room.schedule
+package bangkit.product.chickmed.data.local.room
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -26,4 +26,8 @@ interface ScheduleDao {
 
     @Query("UPDATE schedule SET isActive = :isActive WHERE id = :id")
     suspend fun updateActiveSchedule(id: Int, isActive: Boolean)
+
+    //getTodaySchedule
+    @Query("SELECT * FROM schedule WHERE isActive = 1 AND day LIKE '%' || :day || '%'")
+    fun getTodaySchedule(day: String): List<ScheduleModel>
 }

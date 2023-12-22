@@ -1,7 +1,6 @@
 package bangkit.product.chickmed.data.repository
 
 import bangkit.product.chickmed.data.local.preference.UserPreference
-import bangkit.product.chickmed.data.local.room.bookmark.BookmarkArticleDao
 import bangkit.product.chickmed.data.model.ArticleModel
 import bangkit.product.chickmed.data.remote.response.TemplateResponse
 import bangkit.product.chickmed.util.processError
@@ -11,7 +10,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 
 class ArticleRepository (
-    private val bookmarkArticleDao: BookmarkArticleDao,
     private val userPreference: UserPreference,
     private val apiService: ApiService
 ) {
@@ -60,31 +58,15 @@ class ArticleRepository (
 //            it.id == id
 //        })
 
-
-    fun isBookmarkArticle(id: Int) = bookmarkArticleDao.isBookmarkArticle(id)
-
-    fun getBookmarkArticleModel(query: String) =  bookmarkArticleDao.getBookmarkArticle(query = query)
-
-//    suspend fun insertBookmarkArticle(id: Int) {
-//        dataArticles.map { article ->
-//            if (article.id == id) {
-//                bookmarkArticleDao.insertBookmarkArticle(article)
-//            }
-//        }
-//    }
-
-    suspend fun deleteBookmarkArticle(id: Int) = bookmarkArticleDao.deleteBookmarkArticle(id)
-
     companion object {
         @Volatile
         private var instance: ArticleRepository? = null
         fun getInstance(
             apiService: ApiService,
             userPreference: UserPreference,
-            bookmarkArticleDao: BookmarkArticleDao
         ): ArticleRepository =
             instance ?: synchronized(this) {
-                instance ?: ArticleRepository(bookmarkArticleDao, userPreference, apiService)
+                instance ?: ArticleRepository(userPreference, apiService)
             }.also { instance = it }
     }
 }

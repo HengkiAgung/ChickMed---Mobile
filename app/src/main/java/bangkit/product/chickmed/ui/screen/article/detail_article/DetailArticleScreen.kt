@@ -104,8 +104,8 @@ fun DetailArticleScreen(
                                 text = content,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                                textAlign = TextAlign.Start
+                                    .padding(20.dp, 0.dp, 20.dp, 0.dp),
+                                textAlign = TextAlign.Justify
                             )
                         }
                     }

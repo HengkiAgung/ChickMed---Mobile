@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,12 +40,14 @@ import bangkit.product.chickmed.ui.component.respond.ErrorMessage
 import bangkit.product.chickmed.ui.component.respond.LoadingIndicator
 import bangkit.product.chickmed.ui.screen.ViewModelFactory
 import bangkit.product.chickmed.ui.state.UiState
+import bangkit.product.chickmed.util.truncate
 
 
 @Composable
 fun ScheduleScreen(
     redirectToWelcome: () -> Unit,
     onScheduleClick: (Int) -> Unit = {},
+    redirectToAddSchedule: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ScheduleViewModel = viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
@@ -67,17 +70,9 @@ fun ScheduleScreen(
                         .fillMaxSize()
                         .padding(20.dp)
                 ) {
-                    FloatingActionButton(
-                        onClick = {  },
-                        shape = CircleShape,
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                    ) {
-                        Icon(Icons.Filled.Add, "Large floating action button")
-                    }
-
                     LazyColumn (
-                        modifier = Modifier.fillMaxHeight()
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        modifier = Modifier.fillMaxHeight(),
                     ) {
                         if (schedule.data.isEmpty()) {
                             item {
@@ -105,7 +100,7 @@ fun ScheduleScreen(
                                 ) {
                                     Column {
                                         Text(
-                                            text = scheduleData.title,
+                                            text = scheduleData.title.truncate(10),
                                             style = MaterialTheme.typography.titleMedium,
                                         )
                                         Text(
@@ -211,6 +206,18 @@ fun ScheduleScreen(
                             }
                         }
                     }
+
+                    FloatingActionButton(
+                        shape = CircleShape,
+                        onClick = { redirectToAddSchedule() },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .clickable {
+                                redirectToAddSchedule()
+                            }
+                    ) {
+                        Icon(Icons.Filled.Add, "Large floating action button")
+                    }
                 }
             }
 
@@ -224,6 +231,8 @@ fun ScheduleScreen(
             is UiState.Unauthorized -> {
                 redirectToWelcome()
             }
+
+            else -> {}
         }
     }
 }
